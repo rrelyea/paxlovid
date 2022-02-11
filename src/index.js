@@ -301,7 +301,7 @@ function renderPage(states, providerSites, dataUpdates) {
           </div>
           
           <div style={styles.smallerFont}>
-            ( or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/paxlovid-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
+            (or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/paxlovid-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a>)
           </div>
           <div style={styles.smallerFont}>&nbsp;</div>
           <div>

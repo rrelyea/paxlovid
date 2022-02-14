@@ -294,7 +294,7 @@ function renderPage(states, providerSites, dataUpdates) {
             )} 
           </select>
           <div style={styles.smallerFont}>
-            [latest data published at <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>: {dataUpdatedLocalString}]
+            [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdatedLocalString}]
           </div>
           <div onClick={mapClick} style={styles.mapDiv}>
             <MapChart id='mapChart' />
@@ -312,7 +312,9 @@ function renderPage(states, providerSites, dataUpdates) {
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerFont}>
             Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
-            Github repo for <a href="https://github.com/rrelyea/paxlovid">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">data fetching</a>
+            Github repo for <a href="https://github.com/rrelyea/paxlovid">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">data fetching</a> |
+            Prevention locator: vaccine &amp; <a href="https://rrelyea.github.io/evusheld">evusheld</a> |
+            Treatment locator: <a href="https://rrelyea.github.io/sotrovimab">sotrovimab</a>
           </div>
         </div>
       </div>

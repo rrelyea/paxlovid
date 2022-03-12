@@ -467,12 +467,13 @@ function renderPage(states, mabSites) {
           <div style={styles.smallerCentered}>&nbsp;</div>
           <div style={styles.smallerCentered}>
             ( view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>
-              { site === "Evusheld" ? ", <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'> Microsoft Excel</a>":""}, 
-              { site === "Evusheld" ? ", <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Google Sheets</a>":""},
-              <a href={"https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+site.toLowerCase()+"-data.csv"}>CSV File</a>,
+              { site === "Evusheld" ? ", <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'> Microsoft Excel</a>":""} 
+              { site === "Evusheld" ? ", <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Google Sheets</a>":""}
+              , <a href={"https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+site.toLowerCase()+"-data.csv"}>CSV File</a>,
               or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> ) |
-              Prevention locator: vaccine &amp; <a href="https://rrelyea.github.io/evusheld">evusheld</a> |
-              Treatment locator: <a href="https://rrelyea.github.io/sotrovimab">sotrovimab</a>          </div>
+              { site !== "Evusheld" ? <> Prevention locator: vaccine &amp; <a href="https://rrelyea.github.io/evusheld">evusheld</a> |</>:""}
+              &nbsp;Treatments: { site !== "Bebtelovimab" ? <a href='https://rrelyea.github.io/bebtelovimab'>bebtelovimab</a>:""} { site !== "Paxlovid" ? <a href='https://rrelyea.github.io/paxlovid'>paxlovid</a>:""} { site !== "Sotrovimab" ? <a href='https://rrelyea.github.io/sotrovimab'>sotrovimab</a>:""} 
+          </div>
           </>
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>

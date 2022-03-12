@@ -1,12 +1,15 @@
 {
   "files": {
-    "main.js": "/paxlovid/static/js/main.f304212e.js",
+    "main.css": "/paxlovid/static/css/main.75016d05.css",
+    "main.js": "/paxlovid/static/js/main.84691083.js",
     "static/js/787.f133b9d2.chunk.js": "/paxlovid/static/js/787.f133b9d2.chunk.js",
     "index.html": "/paxlovid/index.html",
-    "main.f304212e.js.map": "/paxlovid/static/js/main.f304212e.js.map",
+    "main.75016d05.css.map": "/paxlovid/static/css/main.75016d05.css.map",
+    "main.84691083.js.map": "/paxlovid/static/js/main.84691083.js.map",
     "787.f133b9d2.chunk.js.map": "/paxlovid/static/js/787.f133b9d2.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.f304212e.js"
+    "static/css/main.75016d05.css",
+    "static/js/main.84691083.js"
   ]
 }

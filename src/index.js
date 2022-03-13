@@ -350,14 +350,15 @@ function GetProviderDetails(state, index, providers) {
 
   // calculate population for state per 100k people.
   var pop100ks = state[11]/100000;
+  var show100kStats = stateFilter !== null && countyFilter === null && cityFilter === null;
   var totals = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr style={styles.totals}>
     <td style={styles.infoLabels}>{cityFilter !== null ? "City":(countyFilter !== null?"County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td style={styles.centered}>{providerCountTotals} providers</td>
     <td style={styles.doseCount}>
-      {'Allotted: '+ allottedTotal + (state[11] !== '' ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {(availableTotal/allottedTotal*100).toFixed(0) + '% Available: ' + availableTotal + (state[11] !== '' ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {(unreportedTotal/allottedTotal*100).toFixed(0) + '% Unreported: '+ unreportedTotal + (state[11] !== '' ? ' (' + (unreportedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {'Allotted: '+ allottedTotal + (show100kStats ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {(availableTotal/allottedTotal*100).toFixed(0) + '% Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {(unreportedTotal/allottedTotal*100).toFixed(0) + '% Unreported: '+ unreportedTotal + (show100kStats ? ' (' + (unreportedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
     </td>
   </tr>
   : false;

@@ -106,6 +106,7 @@ const styles = {
 
 var stateFilter = null;
 var countyFilter = null;
+var adjacentCounties = null;
 var cityFilter = null;
 var zipFilter = null;
 var providerFilter = null;
@@ -418,6 +419,26 @@ function renderPage(states, mabSites) {
 
     stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : null;
     countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
+    if (stateFilter != null && countyFilter !== null) {
+      adjacentCounties = null;
+      Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/county-adjacency/"+stateFilter+"/"+countyFilter.toLowerCase()+".csv", {
+        download: true,
+        complete: function(download) {
+          adjacentCounties = download.data;
+          var neighboringCounties = document.getElementById('neighboringCounties');
+          for (var i = 0; i < adjacentCounties.length; i++) {
+            var a = document.createElement('a');
+            var item = adjacentCounties[i];
+            a.href = "?state=" + item[1] + "&county=" + item[0];
+            a.innerText = toTitleCase(item[0]) + (item[1] !== stateFilter ? "(" + item[1] + ")" : "");
+            neighboringCounties.appendChild(a);
+            var space = document.createTextNode(" ");
+            neighboringCounties.appendChild(space);
+          }
+        }
+      });
+    }
+
     cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
     zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
     providerFilter = urlParams.has('provider') ? urlParams.get('provider').toUpperCase().replaceAll('-',' ') : null;
@@ -462,6 +483,14 @@ function renderPage(states, mabSites) {
             <div style={styles.smallerCentered}>
               [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
             </div>
+            { stateFilter !== null && countyFilter !== null ? <>
+              <div style={styles.smallerCentered}>&nbsp;</div>
+              <div style={styles.centered}>
+                <span>Neighboring Counties: </span>
+                <span id='neighboringCounties'></span>
+              </div>
+              </> : false 
+            }
             <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }
           </div>
@@ -474,13 +503,13 @@ function renderPage(states, mabSites) {
               { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Sheets</a></>:""}
               &nbsp;or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
               <div style={styles.smallerFont}>&nbsp;</div>
-              <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a> <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a> <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a> <a target='_blank' href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
+              <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a> <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a> <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a> <a target='_blank' rel="noreferrer" href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
           </div>
           </>
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            <b>Contact:</b> <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+            <b>Contact:</b> <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Support:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>

@@ -88,40 +88,43 @@ class DoseViewer extends React.Component {
         ChartJS.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
         await this.loadDoseInfo();
         
-        var j = 0;
-        this.state.chartData.labels[j] = "";
-        this.state.availableData[j] = 0;
-        this.state.allottedData[j] = 0;
-        j = j + 1;
-        for (var i = 0; i < this.state.doseInfo.length; i++) {
-            var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
-            var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
-            var available = this.GetDoses(this.state.doseInfo[i][6]);
-            var allotted = this.GetDoses(this.state.doseInfo[i][5]);
+        if (this.state.doseInfo != null) {
+          var j = 0;
+          this.state.chartData.labels[j] = "";
+          this.state.availableData[j] = 0;
+          this.state.allottedData[j] = 0;
+          j = j + 1;
+        
+          for (var i = 0; i < this.state.doseInfo.length; i++) {
+              var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
+              var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
+              var available = this.GetDoses(this.state.doseInfo[i][6]);
+              var allotted = this.GetDoses(this.state.doseInfo[i][5]);
 
-            if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null && (available !== null || allotted != null)) {
-              this.state.chartData.labels[j] = reportDate;
-              this.state.availableData[j] = available;
-              this.state.allottedData[j] = allotted;
-              j = j + 1;
-            }
+              if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null && (available !== null || allotted != null)) {
+                this.state.chartData.labels[j] = reportDate;
+                this.state.availableData[j] = available;
+                this.state.allottedData[j] = allotted;
+                j = j + 1;
+              }
+          }
+
+          this.state.chartData.datasets = [{
+            data: this.state.availableData,
+            label: this.props.mini !== 'true' ? "Doses Available (in stock)" : this.props.available + " Avail",
+            borderColor: '#00DD00',
+            backgroundColor: '#00FF00',
+            fill: false,
+          },
+          {
+            data: this.state.allottedData,
+            label: this.props.mini !== 'true' ? "Cumulative Allotted (from State)" : this.props.allotted + " Allotted...",
+            borderColor: '#3e95cd',
+            backgroundColor: 'lightblue',
+            fill: false,
+          }];
+          this.setState({chartData:this.state.chartData});
         }
-
-        this.state.chartData.datasets = [{
-          data: this.state.availableData,
-          label: this.props.mini !== 'true' ? "Doses Available (in stock)" : this.props.available + " Avail",
-          borderColor: '#00DD00',
-          backgroundColor: '#00FF00',
-          fill: false,
-        },
-        {
-          data: this.state.allottedData,
-          label: this.props.mini !== 'true' ? "Cumulative Allotted (from State)" : this.props.allotted + " Allotted",
-          borderColor: '#3e95cd',
-          backgroundColor: 'lightblue',
-          fill: false,
-        }];
-        this.setState({chartData:this.state.chartData});
       }
 
 

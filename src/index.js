@@ -107,6 +107,7 @@ const styles = {
 var stateFilter = null;
 var countyFilter = null;
 var adjacentCounties = null;
+var countiesPerState = null;
 var cityFilter = null;
 var zipFilter = null;
 var providerFilter = null;
@@ -353,12 +354,12 @@ function GetProviderDetails(state, index, providers) {
   var show100kStats = stateFilter !== null && countyFilter === null && cityFilter === null;
   var totals = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr style={styles.totals}>
-    <td style={styles.infoLabels}>{cityFilter !== null ? "City":(countyFilter !== null?"County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
+    <td style={styles.infoLabels}>{cityFilter !== null ? "City":(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td style={styles.centered}>{providerCountTotals} providers</td>
     <td style={styles.doseCount}>
       {'Allotted: '+ allottedTotal + (show100kStats ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {(availableTotal/allottedTotal*100).toFixed(0) + '% Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {(unreportedTotal/allottedTotal*100).toFixed(0) + '% Unreported: '+ unreportedTotal + (show100kStats ? ' (' + (unreportedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {(allottedTotal > 0 ? (availableTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {(allottedTotal > 0 ? (unreportedTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Unreported: ' + unreportedTotal + (show100kStats ? ' (' + (unreportedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
     </td>
   </tr>
   : false;
@@ -370,10 +371,21 @@ function GetProviderDetails(state, index, providers) {
        </tbody>
 }
 
-function navigateToState(state) {
+function navigateTo(state, county) {
   const params = new URLSearchParams(window.location.search);
-  if (state !== "ChooseState" && state !== "" && state !== null) { params.set('state', state) } else if (params.has('state')) params.delete('state');
-  if (params.has('county')) params.delete('county');
+  if (state !== "< STATE >" && state !== "" && state !== null) { 
+    params.set('state', state);
+    countiesPerState = null;
+  } else if (params.has('state')) {
+    params.delete('state');
+  }
+
+  if (county !== "< county >" && county !== "" && county !== null) { 
+    params.set('county', toTitleCase(county))
+  } else if (params.has('county')) {
+    params.delete('county');
+  }
+  
   if (params.has('city')) params.delete('city');
   if (params.has('zip')) params.delete('zip');
   if (params.has('provider')) params.delete('provider');
@@ -383,9 +395,14 @@ function navigateToState(state) {
 }
 
 function renderPage(states, mabSites) {
-  const handleChange = (e) => {
-    navigateToState(e.target.value);
+  const handleStateChange = (e) => {
+    navigateTo(e.target.value, null);
   }
+
+  const handleCountyChange = (e) => {
+    navigateTo(stateFilter, e.target.value);
+  }
+
   const mapClick = (e) => {
     var element = e.target;
     var state_code = null;
@@ -405,12 +422,12 @@ function renderPage(states, mabSites) {
 
     if (state_code !== null) {
       chooseState.value = state_code;
-      navigateToState(state_code);  
+      navigateTo(state_code, null);  
     }
     else
     {
-      chooseState.value = "ChooseState";
-      navigateToState("");
+      chooseState.value = "< state >";
+      navigateTo("", null);
     }
   }
 
@@ -427,6 +444,9 @@ function renderPage(states, mabSites) {
         complete: function(download) {
           adjacentCounties = download.data;
           var neighboringCounties = document.getElementById('neighboringCounties');
+          while (neighboringCounties.lastElementChild) {
+            neighboringCounties.removeChild(neighboringCounties.lastElementChild);
+          }
           for (var i = 0; i < adjacentCounties.length; i++) {
             var a = document.createElement('a');
             var item = adjacentCounties[i];
@@ -435,6 +455,29 @@ function renderPage(states, mabSites) {
             neighboringCounties.appendChild(a);
             var space = document.createTextNode(" ");
             neighboringCounties.appendChild(space);
+          }
+        }
+      });
+    }
+
+    if (stateFilter !== null && countiesPerState === null) {
+      Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/county-data/"+stateFilter+".csv", {
+        download: true,
+        complete: function(download) {
+          countiesPerState = download.data;
+          var chooseCounty = document.getElementById('chooseCounty');
+          while (chooseCounty.lastElementChild) {
+            chooseCounty.removeChild(chooseCounty.lastElementChild);
+          }
+          for (var i = 0; i < countiesPerState.length; i++) {
+            var option = document.createElement('option');
+            var item = countiesPerState[i];
+            option.value = item[0].toUpperCase();
+            option.innerText = item[0];
+            chooseCounty.appendChild(option);
+            if (countyFilter !== null && item[0].toUpperCase() == countyFilter.toUpperCase()) {
+              chooseCounty.value = item[0].toUpperCase();
+            }
           }
         }
       });
@@ -461,18 +504,19 @@ function renderPage(states, mabSites) {
           { zipFilter === null || providerFilter === null ?
             <>
               <div style={styles.centered}>
-                <label style={styles.chooseState} htmlFor='chooseState'>{constants.site} providers in:&nbsp;</label>
-                <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
-                  <option value="ChooseState">Choose State</option>
+                <label style={styles.chooseState} htmlFor='chooseState'>{constants.site} providers in:
+                </label> <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
                   {states.data.map((state,index) => 
-                    <option key={index} value={index > 0 ? state[3].trim(): "--"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "--"}</option>
+                    <option key={index} value={index > 0 ? state[3].trim(): "< STATE >"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "< state >"}</option>
                   )} 
-                </select>
+                </select> { stateFilter !== null ? <> <select style={styles.mediumFont} id='chooseCounty' onChange={(e) => handleCountyChange(e)}>
+                  </select> <a href={linkToState}>(clear)</a>
+                </> : false
+                }
               </div>
-              { countyFilter !== null ? <div style={styles.centered}>County: {toTitleCase(countyFilter)} <a href={linkToState}>(show all)</a> </div> : false }
-              { cityFilter !== null ? <div style={styles.centered}>City: {toTitleCase(cityFilter)} <a href={linkToState}>(show all)</a> </div> : false }
-              { providerFilter !== null ? <div style={styles.centered}>Provider contains '{providerFilter}' <a href={linkToState}>(show all)</a> </div> : false }
-              { zipFilter !== null ? <div style={styles.centered}>Zip Code: {zipFilter} <a href={linkToState}>(show all)</a> </div> : false }
+              { cityFilter !== null ? <div style={styles.centered}>City: {toTitleCase(cityFilter)} <a href={linkToState}>(clear)</a> </div> : false }
+              { providerFilter !== null ? <div style={styles.centered}>Provider contains '{providerFilter}' <a href={linkToState}>(clear)</a> </div> : false }
+              { zipFilter !== null ? <div style={styles.centered}>Zip Code: {zipFilter} </div> : false }
               <div onClick={mapClick} style={styles.mapDiv}>
                 <MapChart id='mapChart' />
               </div>

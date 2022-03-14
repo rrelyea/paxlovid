@@ -23,6 +23,7 @@ class DoseViewer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            mounted: false,
             availableData: [],
             allottedData: [],
             doseInfo: null,
@@ -71,7 +72,10 @@ class DoseViewer extends React.Component {
     }
 
     async loadDoseInfo() {
-        this.setState({doseInfo:await this.toCsv(this.baseUrl + this.props.zipCode + ".csv")})
+      var doseInfo = await this.toCsv(this.baseUrl + this.props.zipCode + ".csv");
+      if (this.state.mounted) {
+        this.setState({doseInfo: doseInfo})
+      }
     }
 
     GetDate(date,start=0) {
@@ -84,7 +88,12 @@ class DoseViewer extends React.Component {
       return dose;
     }
 
-    async componentDidMount () {
+      async componentWillUnmount () {
+        this.state.mounted = false;
+      }
+
+      async componentDidMount () {
+        this.state.mounted = true;
         ChartJS.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
         await this.loadDoseInfo();
         
@@ -123,7 +132,9 @@ class DoseViewer extends React.Component {
             backgroundColor: 'lightblue',
             fill: false,
           }];
-          this.setState({chartData:this.state.chartData});
+          if (this.state.mounted) {
+            this.setState({chartData:this.state.chartData});
+          }
         }
       }
 

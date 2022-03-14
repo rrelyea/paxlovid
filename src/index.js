@@ -354,7 +354,7 @@ function GetProviderDetails(state, index, providers) {
   var show100kStats = stateFilter !== null && countyFilter === null && cityFilter === null;
   var totals = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr style={styles.totals}>
-    <td style={styles.infoLabels}>{cityFilter !== null ? "City":(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
+    <td style={styles.infoLabels}>{cityFilter !== null ? toTitleCase(cityFilter):(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td style={styles.centered}>{providerCountTotals} providers</td>
     <td style={styles.doseCount}>
       {'Allotted: '+ allottedTotal + (show100kStats ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
@@ -466,17 +466,19 @@ function renderPage(states, mabSites) {
         complete: function(download) {
           countiesPerState = download.data;
           var chooseCounty = document.getElementById('chooseCounty');
-          while (chooseCounty.lastElementChild) {
-            chooseCounty.removeChild(chooseCounty.lastElementChild);
-          }
-          for (var i = 0; i < countiesPerState.length; i++) {
-            var option = document.createElement('option');
-            var item = countiesPerState[i];
-            option.value = item[0].toUpperCase();
-            option.innerText = item[0];
-            chooseCounty.appendChild(option);
-            if (countyFilter !== null && item[0].toUpperCase() === countyFilter.toUpperCase()) {
-              chooseCounty.value = item[0].toUpperCase();
+          if (chooseCounty != null) {
+            while (chooseCounty.lastElementChild) {
+              chooseCounty.removeChild(chooseCounty.lastElementChild);
+            }
+            for (var i = 0; i < countiesPerState.length; i++) {
+              var option = document.createElement('option');
+              var item = countiesPerState[i];
+              option.value = item[0].toUpperCase();
+              option.innerText = item[0];
+              chooseCounty.appendChild(option);
+              if (countyFilter !== null && item[0].toUpperCase() === countyFilter.toUpperCase()) {
+                chooseCounty.value = item[0].toUpperCase();
+              }
             }
           }
         }

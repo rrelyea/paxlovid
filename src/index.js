@@ -475,7 +475,7 @@ function renderPage(states, mabSites) {
             option.value = item[0].toUpperCase();
             option.innerText = item[0];
             chooseCounty.appendChild(option);
-            if (countyFilter !== null && item[0].toUpperCase() == countyFilter.toUpperCase()) {
+            if (countyFilter !== null && item[0].toUpperCase() === countyFilter.toUpperCase()) {
               chooseCounty.value = item[0].toUpperCase();
             }
           }
@@ -491,10 +491,10 @@ function renderPage(states, mabSites) {
     if (zipFilter !== null && providerFilter !== null) {
       document.title = toTitleCase(providerFilter);
     } else {
-      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constants.site;
-      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constants.site;
-      else if (stateFilter !== null) document.title = stateFilter + " " + constants.site;
-      else document.title = constants.site;
+      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constants.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
+      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constants.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
+      else if (stateFilter !== null) document.title = stateFilter + " " + constants.site + " Providers in " + stateFilter;
+      else document.title = constants.site + " Providers in USA";
     }
     var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
     var page = 
@@ -554,7 +554,7 @@ function renderPage(states, mabSites) {
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            <b>Contact:</b> <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Support:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+            <b>Contact:</b> <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>

@@ -224,7 +224,7 @@ function GetProviderDetails(state, index, providers) {
           var providerUpper = provider[0].replaceAll('-',' ').toUpperCase();
           provider_x = toTitleCase(provider[0]);
           if (providerFilter === null || providerUpper.includes(providerFilter) ) {
-            var linkToProvider = "?zip=" + provider[6].substring(0,5) + "&provider=" + provider_x.replaceAll(' ', '-');
+            var linkToProvider = "?provider=" + provider_x.replaceAll(' ', '-') + "&zip=" + provider[6].substring(0,5);
             var linkToState = "?state=" + state_code;
             var zipCode = provider[6].substring(0,5);
             var linkToCounty = linkToState + "&county=" + county;
@@ -268,7 +268,7 @@ function GetProviderDetails(state, index, providers) {
                 { zipFilter !== null && providerFilter !== null ? (<>
                   <div><span style={styles.doseCount}>{available}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
                   <div><span style={styles.doseCount}>{allotted}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
-                  <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
+                  <div>Last delivery: {toDate(provider[10])}</div>
                   <div style={styles.tinyFont}>&nbsp;</div>
                 </>) :
                 (
@@ -454,7 +454,7 @@ function renderPage(states, mabSites) {
             a.href = "?state=" + item[1] + "&county=" + item[0];
             a.innerText = toTitleCase(item[0]) + (item[1] !== stateFilter ? "(" + item[1] + ")" : "");
             if (i > 0) {
-              var space = document.createTextNode(", ");
+              var space = document.createTextNode(" ");
               neighboringCounties.appendChild(space);
             }
             neighboringCounties.appendChild(a);
@@ -494,11 +494,12 @@ function renderPage(states, mabSites) {
     pageLocation = window.location.hash;
 
     if (zipFilter !== null && providerFilter !== null) {
-      document.title = toTitleCase(providerFilter);
+      document.title = constants.site + " '" + toTitleCase(providerFilter) + "'";
     } else {
       if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constants.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
       else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constants.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
       else if (stateFilter !== null) document.title = stateFilter + " " + constants.site + " Providers in " + stateFilter;
+      else if (providerFilter !== null) document.title = constants.site + " '" + toTitleCase(providerFilter) + "'"
       else document.title = constants.site + " Providers in USA";
     }
     var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
@@ -515,7 +516,7 @@ function renderPage(states, mabSites) {
                     <option key={index} value={index > 0 ? state[3].trim(): "< STATE >"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "< state >"}</option>
                   )} 
                 </select> { stateFilter !== null ? <> <select style={styles.mediumFont} id='chooseCounty' onChange={(e) => handleCountyChange(e)}>
-                  </select> <a href={linkToState}>(clear)</a>
+                  </select> { countyFilter !== null ? <a href={linkToState}>(clear)</a> : false }
                 </> : false
                 }
               </div>
@@ -529,7 +530,7 @@ function renderPage(states, mabSites) {
           : false }
 
           <div>
-            { providerFilter !== null ? <><div style={styles.centered}>{constants.site} Provider: {providerFilter}</div><div>&nbsp;</div></> : false }
+            { providerFilter !== null & zipFilter !== null ? <><div style={styles.centered}>{constants.site} Provider: <b>{toTitleCase(providerFilter)}</b></div><div>&nbsp;</div></> : false }
             <div style={styles.smallerCentered}>
               [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
             </div>

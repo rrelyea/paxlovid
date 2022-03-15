@@ -390,7 +390,8 @@ function navigateTo(state, county) {
   if (params.has('zip')) params.delete('zip');
   if (params.has('provider')) params.delete('provider');
 
-  window.history.replaceState({}, null, `${window.location.pathname}?${params.toString()}`);
+  var paramsString = params.toString();
+  window.history.replaceState({}, null, paramsString.length === 0 ? `${window.location.pathname}` : `${window.location.pathname}?${params.toString()}`);
   renderPage(states, mabSites);
 }
 
@@ -426,8 +427,7 @@ function renderPage(states, mabSites) {
     }
     else
     {
-      chooseState.value = "< state >";
-      navigateTo("", null);
+      navigateTo("< STATE >", null);
     }
   }
 
@@ -447,14 +447,17 @@ function renderPage(states, mabSites) {
           while (neighboringCounties.lastElementChild) {
             neighboringCounties.removeChild(neighboringCounties.lastElementChild);
           }
+
           for (var i = 0; i < adjacentCounties.length; i++) {
             var a = document.createElement('a');
             var item = adjacentCounties[i];
             a.href = "?state=" + item[1] + "&county=" + item[0];
             a.innerText = toTitleCase(item[0]) + (item[1] !== stateFilter ? "(" + item[1] + ")" : "");
+            if (i > 0) {
+              var space = document.createTextNode(", ");
+              neighboringCounties.appendChild(space);
+            }
             neighboringCounties.appendChild(a);
-            var space = document.createTextNode(" ");
-            neighboringCounties.appendChild(space);
           }
         }
       });
@@ -547,16 +550,15 @@ function renderPage(states, mabSites) {
           <div style={styles.smallerCentered}>
             <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={"https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+constants.site.toLowerCase()+"-data.csv"}>CSV</a>
               { constants.site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'>Excel</a></>:""} 
-              { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Sheets</a></>:""}
-              &nbsp;or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
+              { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Sheets</a></>:""}, <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
               <div style={styles.smallerFont}>&nbsp;</div>
-              <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a> <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a> <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a> <a target='_blank' rel="noreferrer" href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
+              <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a>, <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a>, <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a>, <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a>, <a target='_blank' rel="noreferrer" href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
           </div>
           </>
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            <b>Contact:</b> <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+          <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Contact:</b> <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>

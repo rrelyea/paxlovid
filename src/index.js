@@ -545,7 +545,7 @@ function renderPage(states, mabSites) {
               </> : false 
             }
           <div style={styles.centeredYellow}>
-            NOTE: Site is still functional. Just FYI...HealthData.gov is chaning the data they publish. To see details: <a href='https://twitter.com/rrelyea/status/1504252446759038978'>thread on twitter.</a>
+            NOTE: Site is still functional. Just FYI...HealthData.gov is changing the data they publish. Details: <a href='https://twitter.com/rrelyea/status/1504252446759038978'>thread on twitter.</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }

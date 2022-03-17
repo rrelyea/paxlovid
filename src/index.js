@@ -55,7 +55,7 @@ const styles = {
   },
   centeredYellow: {
     textAlign: 'center',
-    background: 'yellow',
+    background: 'lightyellow',
   },
   td: {
     maxWidth: '100px',
@@ -545,7 +545,7 @@ function renderPage(states, mabSites) {
               </> : false 
             }
           <div style={styles.centeredYellow}>
-            NOTE: Site is still functional. HealthData.gov changed their data feed at 4pm PT 3/16. I'm adapting, see details: <a href='https://twitter.com/rrelyea/status/1504252446759038978'>Tweet thread.</a>
+            NOTE: Site is still functional. Just FYI...HealthData.gov is chaning the data they publish. To see details: <a href='https://twitter.com/rrelyea/status/1504252446759038978'>thread on twitter.</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }

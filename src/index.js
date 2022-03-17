@@ -544,9 +544,9 @@ function renderPage(states, mabSites) {
               </div>
               </> : false 
             }
-          <div style={styles.centeredYellow}>
-            NOTE: Site is still functional. Just FYI...HealthData.gov is changing the data they publish. Details: <a href='https://twitter.com/rrelyea/status/1504252446759038978'>thread on twitter.</a>
-          </div>
+          {zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ? <div style={styles.centeredYellow}>
+            NOTE: As of 3/16, some data is no longer being published by HealthData.gov. They aren't publishing new data points for allotted doses (blue line) and several useful dates (last allotted date &amp; last delivered date). Details: <a href='https://twitter.com/rrelyea/status/1504252446759038978'>thread on twitter.</a>
+          </div> : false }
           <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }
           </div>

@@ -127,7 +127,7 @@ class DoseViewer extends React.Component {
           },
           {
             data: this.state.allottedData,
-            label: this.props.mini !== 'true' ? "Cumulative Allotted (from State)" : this.props.allotted + " Allotted",
+            label: this.props.mini !== 'true' ? "Cumulative Allotted (from State)" : "Allotted",
             borderColor: '#3e95cd',
             backgroundColor: 'lightblue',
             fill: false,

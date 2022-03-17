@@ -53,6 +53,10 @@ const styles = {
   centered: {
     textAlign: 'center',
   },
+  centeredYellow: {
+    textAlign: 'center',
+    background: 'yellow',
+  },
   td: {
     maxWidth: '100px',
     verticalAlign: 'top',
@@ -244,8 +248,8 @@ function GetProviderDetails(state, index, providers) {
             } else {
               cityMarkup = null;
             }
-            var allotted = toNumber(provider[11]);
-            var available = toNumber(provider[12]);
+            var allotted = 0; // healthdata.gov no longer publishes allotted doses!
+            var available = toNumber(provider[9]);
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
             allottedTotal += allotted === "--" ? 0 : parseInt(allotted);
             availableTotal += available === "--" ? 0 : parseInt(available);
@@ -267,8 +271,8 @@ function GetProviderDetails(state, index, providers) {
               <td style={styles.tdChart}>
                 { zipFilter !== null && providerFilter !== null ? (<>
                   <div><span style={styles.doseCount}>{available}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
-                  <div><span style={styles.doseCount}>{allotted}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
-                  <div>Last delivery: {toDate(provider[10])}</div>
+                  <div><span style={styles.doseLabel}> Allotted: NO LONGER PUBLISHED*</span></div>
+                  <div>Last delivery: NO LONGER PUBLISHED*</div>
                   <div style={styles.tinyFont}>&nbsp;</div>
                 </>) :
                 (
@@ -357,9 +361,7 @@ function GetProviderDetails(state, index, providers) {
     <td style={styles.infoLabels}>{cityFilter !== null ? toTitleCase(cityFilter):(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td style={styles.centered}>{providerCountTotals} providers</td>
     <td style={styles.doseCount}>
-      {'Allotted: '+ allottedTotal + (show100kStats ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
       {(allottedTotal > 0 ? (availableTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {(allottedTotal > 0 ? (unreportedTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Unreported: ' + unreportedTotal + (show100kStats ? ' (' + (unreportedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
     </td>
   </tr>
   : false;
@@ -542,7 +544,10 @@ function renderPage(states, mabSites) {
               </div>
               </> : false 
             }
-            <div style={styles.smallerCentered}>&nbsp;</div>
+          <div style={styles.centeredYellow}>
+            NOTE: healthdata.gov just STOPPED publishing allotted doses and last delivery date at 4pm PT on 3/16. Still adapting, but most things are working, minus that data. Surprise to all us data consumers!
+          </div>
+          <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }
           </div>
           {zipFilter === null && providerFilter === null ?
@@ -559,7 +564,7 @@ function renderPage(states, mabSites) {
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-          <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Contact:</b> <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+          <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Contact:</b> <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>

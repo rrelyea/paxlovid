@@ -79,12 +79,12 @@ class DoseViewer extends React.Component {
     }
 
     GetDate(date,start=0) {
-      if (date === null || date === undefined || date === "") return null;
+      if (date === null || date === undefined || date === "" || date === "NLP") return null;
       return date.substring(start,start+5);
     }
     
     GetDoses(dose) {
-      if (dose === null || dose === undefined || dose === "") return null;
+      if (dose === null || dose === undefined || dose === "" || dose === "NLP") return null;
       return dose;
     }
 

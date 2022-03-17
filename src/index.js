@@ -545,7 +545,7 @@ function renderPage(states, mabSites) {
               </> : false 
             }
           <div style={styles.centeredYellow}>
-            NOTE: healthdata.gov just STOPPED publishing allotted doses and last delivery date at 4pm PT on 3/16. Still adapting, but most things are working, minus that data. Surprise to all us data consumers!
+            NOTE: healthdata.gov just STOPPED publishing allotted doses, last delivery date and more at 4pm PT on 3/16. <a href='https://twitter.com/rrelyea/status/1504252446759038978'>Tweet thread.</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }

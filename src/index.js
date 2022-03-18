@@ -554,7 +554,7 @@ function renderPage(states, mabSites) {
           <>
           <div style={styles.smallerCentered}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={"https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+constants.site.toLowerCase()+"-data.csv"}>CSV</a>
+            <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"}>CSV</a>
               { constants.site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'>Excel</a></>:""} 
               { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Sheets</a></>:""}, <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
               <div style={styles.smallerFont}>&nbsp;</div>
@@ -564,7 +564,7 @@ function renderPage(states, mabSites) {
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-          <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Contact:</b> <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+          <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Contact:</b> <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>

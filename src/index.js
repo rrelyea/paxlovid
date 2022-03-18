@@ -545,7 +545,7 @@ function renderPage(states, mabSites) {
               </> : false 
             }
           {zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ? <div style={styles.centeredYellow}>
-            NOTE: As of 3/16, allotted doses (blue line) data is no longer being published by HealthData.gov.
+            Mar 16th NOTE: allotted doses (blue line) data is no longer being shared by HealthData.gov
           </div> : false }
           <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }

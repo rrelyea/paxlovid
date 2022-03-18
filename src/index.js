@@ -599,7 +599,7 @@ Papa.parse(baseUri + "data/therapeutics/process-dates.csv", {
   download: true,
   complete: function(lastProcessedData) {
     // parse date as UTC, but it is really eastern time, so add 5 hours to have correct UTC time.
-    var dataUpdatedDate = new Date(lastProcessedData.data[0] + 'Z');
+    var dataUpdatedDate = new Date(lastProcessedData.data[0][0] + 'Z');
     dataUpdatedDate.setHours(dataUpdatedDate.getHours() + 5);
 
     // create string with local time/date

@@ -118,7 +118,7 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
-
+var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/"
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
     return (word.charAt(0).toUpperCase() + word.slice(1));
@@ -441,7 +441,7 @@ function renderPage(states, mabSites) {
     countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
     if (stateFilter != null && countyFilter !== null) {
       adjacentCounties = null;
-      Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/county-adjacency/"+stateFilter+"/"+countyFilter.toLowerCase()+".csv", {
+      Papa.parse(baseUri + "data/counties/adjacency/"+stateFilter+"/"+countyFilter.toLowerCase()+".csv", {
         download: true,
         complete: function(download) {
           adjacentCounties = download.data;
@@ -466,7 +466,7 @@ function renderPage(states, mabSites) {
     }
 
     if (stateFilter !== null && countiesPerState === null) {
-      Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/county-data/"+stateFilter+".csv", {
+      Papa.parse("https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/data/counties/per-state/"+stateFilter+".csv", {
         download: true,
         complete: function(download) {
           countiesPerState = download.data;
@@ -545,7 +545,7 @@ function renderPage(states, mabSites) {
               </> : false 
             }
           {zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ? <div style={styles.centeredYellow}>
-            NOTE: As of 3/16, some data is no longer being published by HealthData.gov. They aren't publishing new data points for allotted doses (blue line) and several useful dates (last allotted date &amp; last delivered date). Details: <a href='https://twitter.com/rrelyea/status/1504252446759038978'>thread on twitter.</a>
+            NOTE: As of 3/16, allotted doses (blue line) data is no longer being published by HealthData.gov.
           </div> : false }
           <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }
@@ -575,7 +575,7 @@ function renderPage(states, mabSites) {
 }
 
 var mabSites = null;
-Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+constants.site.toLowerCase()+"-data.csv", {
+Papa.parse(baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv", {
   download: true,
   complete: function(mabResults) {
     mabSites = mabResults;
@@ -584,11 +584,10 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
 });
 
 var states = null;
-var baseUri = "https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/";
 
 var currentTime = new Date();
 var urlSuffix = currentTime.getMinutes() + "-" + currentTime.getSeconds();
-Papa.parse(baseUri + "state-health-departments.csv?"+urlSuffix, {
+Papa.parse(baseUri + "data/states/state-health-info.csv?"+urlSuffix, {
   download: true,
   complete: function(stateResults) {
     states = stateResults;
@@ -596,7 +595,7 @@ Papa.parse(baseUri + "state-health-departments.csv?"+urlSuffix, {
   }
 });
 
-Papa.parse(baseUri + "data/therapeutics-last-processed.txt", {
+Papa.parse(baseUri + "data/therapeutics/process-dates.csv", {
   download: true,
   complete: function(lastProcessedData) {
     // parse date as UTC, but it is really eastern time, so add 5 hours to have correct UTC time.

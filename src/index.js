@@ -195,7 +195,6 @@ function GetProviderDetails(state, index, providers) {
 
   var allottedTotal = 0;
   var availableTotal = 0;
-  var unreportedTotal = 0;
   var providerCountTotals = 0;
   var firstLink = 0;
 
@@ -253,7 +252,6 @@ function GetProviderDetails(state, index, providers) {
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
             allottedTotal += allotted === "--" ? 0 : parseInt(allotted);
             availableTotal += available === "--" ? 0 : parseInt(available);
-            unreportedTotal += available === "--" ? parseInt(allotted):0;
             providerCountTotals += 1;
 
             return <><tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
@@ -271,8 +269,6 @@ function GetProviderDetails(state, index, providers) {
               <td style={styles.tdChart}>
                 { zipFilter !== null && providerFilter !== null ? (<>
                   <div><span style={styles.doseCount}>{available}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
-                  <div><span style={styles.doseLabel}> Allotted: NO LONGER PUBLISHED*</span></div>
-                  <div>Last delivery: NO LONGER PUBLISHED*</div>
                   <div style={styles.tinyFont}>&nbsp;</div>
                 </>) :
                 (

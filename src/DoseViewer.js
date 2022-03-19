@@ -13,12 +13,6 @@ import {
   } from "chart.js";
 import { Chart } from 'react-chartjs-2';
 
-const styles = {
-  smallText: {
-    fontSize: '8pt'
-  },
-}
-
 class DoseViewer extends React.Component {
     constructor(props) {
         super(props);
@@ -104,6 +98,9 @@ class DoseViewer extends React.Component {
           this.state.allottedData[j] = 0;
           j = j + 1;
         
+          var lastReportDate;
+          var lastAvailable;
+          var lastAllotted;
           for (var i = 0; i < this.state.doseInfo.length; i++) {
               var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
               var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
@@ -111,10 +108,15 @@ class DoseViewer extends React.Component {
               var allotted = this.GetDoses(this.state.doseInfo[i][5]);
 
               if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null && (available !== null || allotted != null)) {
-                this.state.chartData.labels[j] = reportDate;
-                this.state.availableData[j] = available;
-                this.state.allottedData[j] = allotted;
-                j = j + 1;
+                if (reportDate !== lastReportDate || available !== lastAvailable || allotted !== lastAllotted) {
+                  this.state.chartData.labels[j] = reportDate;
+                  this.state.availableData[j] = available;
+                  this.state.allottedData[j] = allotted;
+                  j = j + 1;
+                  lastReportDate = reportDate;
+                  lastAvailable = available;
+                  lastAllotted = allotted;
+                }
               }
           }
 

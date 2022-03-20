@@ -53,7 +53,11 @@ const styles = {
   centered: {
     textAlign: 'center',
   },
-  centeredYellow: {
+  centeredOrange: {
+    textAlign: 'center',
+    background: 'orange',
+  },
+  centeredLightYellow: {
     textAlign: 'center',
     background: 'lightyellow',
   },
@@ -118,7 +122,9 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
-var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/"
+var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/";
+var dataDate = null;
+
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
     return (word.charAt(0).toUpperCase() + word.slice(1));
@@ -247,8 +253,8 @@ function GetProviderDetails(state, index, providers) {
             } else {
               cityMarkup = null;
             }
-            var allotted = 0; // healthdata.gov no longer publishes allotted doses!
-            var available = toNumber(provider[9]);
+            var allotted = dataDate !== null ? toNumber(provider[11]) : 0;; // healthdata.gov no longer publishes allotted doses!
+            var available = dataDate !== null ? toNumber(provider[12]) : toNumber(provider[9]);
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
             allottedTotal += allotted === "--" ? 0 : parseInt(allotted);
             availableTotal += available === "--" ? 0 : parseInt(available);
@@ -274,7 +280,7 @@ function GetProviderDetails(state, index, providers) {
                 (
                 <>
                 <a href={linkToProvider}>
-                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constants.siteLower} />
+                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constants.siteLower} dataDate={dataDate} />
                 </a>
                 </>
                 )}
@@ -283,7 +289,7 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constants.siteLower} />
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constants.siteLower} dataDate={dataDate} />
                 </td>
               </tr>
               :false
@@ -358,6 +364,7 @@ function GetProviderDetails(state, index, providers) {
     <td style={styles.centered}>{providerCountTotals} providers</td>
     <td style={styles.doseCount}>
       {(allottedTotal > 0 ? (availableTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {(allottedTotal > 0 ? 'Allotted: ' + allottedTotal + (show100kStats ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "") : false) }<br/>
     </td>
   </tr>
   : false;
@@ -390,16 +397,22 @@ function navigateTo(state, county) {
 
   var paramsString = params.toString();
   window.history.replaceState({}, null, paramsString.length === 0 ? `${window.location.pathname}` : `${window.location.pathname}?${params.toString()}`);
-  renderPage(states, mabSites);
+  renderPage(states);
 }
 
-function renderPage(states, mabSites) {
+function renderPage(states) {
   const handleStateChange = (e) => {
     navigateTo(e.target.value, null);
   }
 
   const handleCountyChange = (e) => {
     navigateTo(stateFilter, e.target.value);
+  }
+
+  const oldProvidersClick = () => {
+    var check = document.getElementById('showOldData');
+    dataDate = check.checked ? "03-15" : null;
+    renderPage(states);
   }
 
   const mapClick = (e) => {
@@ -429,153 +442,174 @@ function renderPage(states, mabSites) {
     }
   }
 
-  if (states != null && mabSites != null)
-  {
-    var urlParams = new URLSearchParams(window.location.search);
-
-    stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : null;
-    countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
-    if (stateFilter != null && countyFilter !== null) {
-      adjacentCounties = null;
-      Papa.parse(baseUri + "data/counties/adjacency/"+stateFilter+"/"+countyFilter.toLowerCase()+".csv", {
-        download: true,
-        complete: function(download) {
-          adjacentCounties = download.data;
-          var neighboringCounties = document.getElementById('neighboringCounties');
-          while (neighboringCounties.lastElementChild) {
-            neighboringCounties.removeChild(neighboringCounties.lastElementChild);
-          }
-
-          for (var i = 0; i < adjacentCounties.length; i++) {
-            var a = document.createElement('a');
-            var item = adjacentCounties[i];
-            a.href = "?state=" + item[1] + "&county=" + item[0];
-            a.innerText = toTitleCase(item[0]) + (item[1] !== stateFilter ? "(" + item[1] + ")" : "");
-            if (i > 0) {
-              var space = document.createTextNode(" ");
-              neighboringCounties.appendChild(space);
-            }
-            neighboringCounties.appendChild(a);
-          }
-        }
-      });
-    }
-
-    if (stateFilter !== null && countiesPerState === null) {
-      Papa.parse("https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/data/counties/per-state/"+stateFilter+".csv", {
-        download: true,
-        complete: function(download) {
-          countiesPerState = download.data;
-          var chooseCounty = document.getElementById('chooseCounty');
-          if (chooseCounty != null) {
-            while (chooseCounty.lastElementChild) {
-              chooseCounty.removeChild(chooseCounty.lastElementChild);
-            }
-            for (var i = 0; i < countiesPerState.length; i++) {
-              var option = document.createElement('option');
-              var item = countiesPerState[i];
-              option.value = item[0].toUpperCase();
-              option.innerText = item[0];
-              chooseCounty.appendChild(option);
-              if (countyFilter !== null && item[0].toUpperCase() === countyFilter.toUpperCase()) {
-                chooseCounty.value = item[0].toUpperCase();
-              }
-            }
-          }
-        }
-      });
-    }
-
-    cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
-    zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
-    providerFilter = urlParams.has('provider') ? urlParams.get('provider').toUpperCase().replaceAll('-',' ') : null;
-    pageLocation = window.location.hash;
-
-    if (zipFilter !== null && providerFilter !== null) {
-      document.title = constants.site + " '" + toTitleCase(providerFilter) + "'";
-    } else {
-      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constants.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
-      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constants.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
-      else if (stateFilter !== null) document.title = stateFilter + " " + constants.site + " Providers in " + stateFilter;
-      else if (providerFilter !== null) document.title = constants.site + " '" + toTitleCase(providerFilter) + "'"
-      else document.title = constants.site + " Providers in USA";
-    }
-    var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
-    var page = 
-      <div>
-        <div >
-
-          { zipFilter === null || providerFilter === null ?
-            <>
-              <div style={styles.centered}>
-                <label style={styles.chooseState} htmlFor='chooseState'>{constants.site} providers in:
-                </label> <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
-                  {states.data.map((state,index) => 
-                    <option key={index} value={index > 0 ? state[3].trim(): "< STATE >"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "< state >"}</option>
-                  )} 
-                </select> { stateFilter !== null ? <> <select style={styles.mediumFont} id='chooseCounty' onChange={(e) => handleCountyChange(e)}>
-                  </select> { countyFilter !== null ? <a href={linkToState}>(clear)</a> : false }
-                </> : false
-                }
-              </div>
-              { cityFilter !== null ? <div style={styles.centered}>City: {toTitleCase(cityFilter)} <a href={linkToState}>(clear)</a> </div> : false }
-              { providerFilter !== null ? <div style={styles.centered}>Provider contains '{providerFilter}' <a href={linkToState}>(clear)</a> </div> : false }
-              { zipFilter !== null ? <div style={styles.centered}>Zip Code: {zipFilter} </div> : false }
-              <div onClick={mapClick} style={styles.mapDiv}>
-                <MapChart id='mapChart' />
-              </div>
-            </>
-          : false }
-
-          <div>
-            { providerFilter !== null & zipFilter !== null ? <><div style={styles.centered}>{constants.site} Provider: <b>{toTitleCase(providerFilter)}</b></div><div>&nbsp;</div></> : false }
-            <div style={styles.smallerCentered}>
-              [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
-            </div>
-            { stateFilter !== null && countyFilter !== null ? <>
-              <div style={styles.smallerCentered}>&nbsp;</div>
-              <div style={styles.centered}>
-                <span>Neighboring Counties: </span>
-                <span id='neighboringCounties'></span>
-              </div>
-              </> : false 
-            }
-          {zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ? <div style={styles.centeredYellow}>
-            Mar 16th NOTE: allotted doses (blue line) data is no longer being shared by HealthData.gov
-          </div> : false }
-          <div style={styles.smallerCentered}>&nbsp;</div>
-            { GetStateDetails(states.data, mabSites.data) }
-          </div>
-          {zipFilter === null && providerFilter === null ?
-          <>
-          <div style={styles.smallerCentered}>&nbsp;</div>
-          <div style={styles.smallerCentered}>
-            <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"}>CSV</a>
-              { constants.site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'>Excel</a></>:""} 
-              { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Sheets</a></>:""}, <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
-              <div style={styles.smallerFont}>&nbsp;</div>
-              <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a>, <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a>, <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a>, <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a>, <a target='_blank' rel="noreferrer" href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
-          </div>
-          </>
-          : false }
-          <div style={styles.smallerFont}>&nbsp;</div>
-          <div style={styles.smallerCentered}>
-          <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Contact:</b> <a href="mailto:rob@relyeas.net">rob@relyeas.net</a>, <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="https://www.facebook.com/rrelyea/posts/10228182654571364">facebook/rrelyea</a>, <a href="https://www.reddit.com/user/rrelyea/comments/th1ovj/immunocompromised_discuss_evusheld_with_doctors/">reddit/rrelyea</a>,  <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
-          </div>
-          <div style={styles.smallerCentered}>&nbsp;</div>
-        </div>
-      </div>
-      
-    ReactDOM.render(page, document.getElementById('root'));
+  if (states === null || mabSites === null) {
+    return;
   }
+
+  if (states !== null && dataDate !== null && mabSites0315 === null) {
+    load0315Providers();
+    return;
+  }
+
+  var urlParams = new URLSearchParams(window.location.search);
+
+  stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : null;
+  countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
+  if (stateFilter != null && countyFilter !== null) {
+    adjacentCounties = null;
+    Papa.parse(baseUri + "data/counties/adjacency/"+stateFilter+"/"+countyFilter.toLowerCase()+".csv", {
+      download: true,
+      complete: function(download) {
+        adjacentCounties = download.data;
+        var neighboringCounties = document.getElementById('neighboringCounties');
+        while (neighboringCounties.lastElementChild) {
+          neighboringCounties.removeChild(neighboringCounties.lastElementChild);
+        }
+
+        for (var i = 0; i < adjacentCounties.length; i++) {
+          var a = document.createElement('a');
+          var item = adjacentCounties[i];
+          a.href = "?state=" + item[1] + "&county=" + item[0];
+          a.innerText = toTitleCase(item[0]) + (item[1] !== stateFilter ? "(" + item[1] + ")" : "");
+          if (i > 0) {
+            var space = document.createTextNode(" ");
+            neighboringCounties.appendChild(space);
+          }
+          neighboringCounties.appendChild(a);
+        }
+      }
+    });
+  }
+
+  if (stateFilter !== null && countiesPerState === null) {
+    Papa.parse("https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/data/counties/per-state/"+stateFilter+".csv", {
+      download: true,
+      complete: function(download) {
+        countiesPerState = download.data;
+        var chooseCounty = document.getElementById('chooseCounty');
+        if (chooseCounty != null) {
+          while (chooseCounty.lastElementChild) {
+            chooseCounty.removeChild(chooseCounty.lastElementChild);
+          }
+          for (var i = 0; i < countiesPerState.length; i++) {
+            var option = document.createElement('option');
+            var item = countiesPerState[i];
+            option.value = item[0].toUpperCase();
+            option.innerText = item[0];
+            chooseCounty.appendChild(option);
+            if (countyFilter !== null && item[0].toUpperCase() === countyFilter.toUpperCase()) {
+              chooseCounty.value = item[0].toUpperCase();
+            }
+          }
+        }
+      }
+    });
+  }
+
+  cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
+  zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
+  providerFilter = urlParams.has('provider') ? urlParams.get('provider').toUpperCase().replaceAll('-',' ') : null;
+  pageLocation = window.location.hash;
+
+  if (zipFilter !== null && providerFilter !== null) {
+    document.title = constants.site + " '" + toTitleCase(providerFilter) + "'";
+  } else {
+    if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constants.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
+    else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constants.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
+    else if (stateFilter !== null) document.title = stateFilter + " " + constants.site + " Providers in " + stateFilter;
+    else if (providerFilter !== null) document.title = constants.site + " '" + toTitleCase(providerFilter) + "'"
+    else document.title = constants.site + " Providers in USA";
+  }
+  var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
+  var page = 
+    <div>
+      <div >
+
+        { zipFilter === null || providerFilter === null ?
+          <>
+            <div style={styles.centered}>
+              <label style={styles.chooseState} htmlFor='chooseState'>{constants.site} providers in:
+              </label> <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
+                {states.data.map((state,index) => 
+                  <option key={index} value={index > 0 ? state[3].trim(): "< STATE >"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "< state >"}</option>
+                )} 
+              </select> { stateFilter !== null ? <> <select style={styles.mediumFont} id='chooseCounty' onChange={(e) => handleCountyChange(e)}>
+                </select> { countyFilter !== null ? <a href={linkToState}>(clear)</a> : false }
+              </> : false
+              }
+            </div>
+            { cityFilter !== null ? <div style={styles.centered}>City: {toTitleCase(cityFilter)} <a href={linkToState}>(clear)</a> </div> : false }
+            { providerFilter !== null ? <div style={styles.centered}>Provider contains '{providerFilter}' <a href={linkToState}>(clear)</a> </div> : false }
+            { zipFilter !== null ? <div style={styles.centered}>Zip Code: {zipFilter} </div> : false }
+            <div onClick={mapClick} style={styles.mapDiv}>
+              <MapChart id='mapChart' />
+            </div>
+          </>
+        : false }
+
+        <div>
+          { providerFilter !== null & zipFilter !== null ? <><div style={styles.centered}>{constants.site} Provider: <b>{toTitleCase(providerFilter)}</b></div><div>&nbsp;</div></> : false }
+          <div style={styles.smallerCentered}>
+            [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
+          </div>
+          { stateFilter !== null && countyFilter !== null ? <>
+            <div style={styles.smallerCentered}>&nbsp;</div>
+            <div style={styles.centered}>
+              <span>Neighboring Counties: </span>
+              <span id='neighboringCounties'></span>
+            </div>
+            </> : false 
+          }
+        {zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ? <div style={dataDate !== null ? styles.centeredOrange : styles.centeredLightYellow}>
+          <div style={styles.tinyFont}>&nbsp;</div>
+          <div>Mar 16th NOTE: HHS.gov removed many providers &amp; all allotted data, to peek at the old data check this box:</div>
+          <label ><input type='checkbox' id='showOldData' onClick={oldProvidersClick} defaultChecked={dataDate === "03-15"} /> Show March 15th Providers and Data</label>
+        </div> : false }
+        <div style={styles.smallerCentered}>&nbsp;</div>
+          { GetStateDetails(states.data, dataDate !== null ? mabSites0315.data : mabSites.data) }
+        </div>
+        {zipFilter === null && providerFilter === null ?
+        <>
+        <div style={styles.smallerCentered}>&nbsp;</div>
+        <div style={styles.smallerCentered}>
+          <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"}>CSV</a>
+            { constants.site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'>Excel</a></>:""} 
+            { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Sheets</a></>:""}, <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
+            <div style={styles.smallerFont}>&nbsp;</div>
+            <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a>, <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a>, <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a>, <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a>, <a target='_blank' rel="noreferrer" href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
+        </div>
+        </>
+        : false }
+        <div style={styles.smallerFont}>&nbsp;</div>
+        <div style={styles.smallerCentered}>
+        <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Contact:</b> <a href="mailto:rob@relyeas.net">rob@relyeas.net</a>, <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="https://www.facebook.com/rrelyea/posts/10228182654571364">facebook/rrelyea</a>, <a href="https://www.reddit.com/user/rrelyea/comments/th1ovj/immunocompromised_discuss_evusheld_with_doctors/">reddit/rrelyea</a>,  <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
+        </div>
+        <div style={styles.smallerCentered}>&nbsp;</div>
+      </div>
+    </div>
+    
+  ReactDOM.render(page, document.getElementById('root'));
+}
+
+var mabSites0315 = null;
+function load0315Providers() {
+  var providers0315 = baseUri + "data/therapeutics/2022-03-15-Snapshot/"+constants.siteLower+"-data.csv"
+  Papa.parse(providers0315, {
+    download: true,
+    complete: function(mabResults) {
+      mabSites0315 = mabResults;
+      renderPage(states);
+    }
+  });
 }
 
 var mabSites = null;
-Papa.parse(baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv", {
+var currentProviders = baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"
+Papa.parse(currentProviders, {
   download: true,
   complete: function(mabResults) {
     mabSites = mabResults;
-    renderPage(states, mabSites);
+    renderPage(states);
   }
 });
 
@@ -587,7 +621,7 @@ Papa.parse(baseUri + "data/states/state-health-info.csv?"+urlSuffix, {
   download: true,
   complete: function(stateResults) {
     states = stateResults;
-    renderPage(states, mabSites);
+    renderPage(states);
   }
 });
 
@@ -600,7 +634,7 @@ Papa.parse(baseUri + "data/therapeutics/process-dates.csv", {
 
     // create string with local time/date
     dataUpdated = dataUpdatedDate.toLocaleString('en-US', {weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
-    renderPage(states, mabSites);
+    renderPage(states);
   }
 });
 

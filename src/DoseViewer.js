@@ -123,13 +123,13 @@ class DoseViewer extends React.Component {
           this.state.chartData.datasets = [{
             data: this.state.availableData,
             label: this.props.mini !== 'true' ? "Doses Available (in stock)" : this.props.available + " Avail",
-            borderColor: '#00DD00',
-            backgroundColor: '#00FF00',
+            borderColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
+            backgroundColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
             fill: false,
           },
           {
             data: this.state.allottedData,
-            label: this.props.mini !== 'true' ? "Cumulative Allotted (from State)" : "Allotted",
+            label: this.props.mini !== 'true' ? "Cumulative Allotted (from State)" : (this.props.dataDate !== null ? this.props.allotted + " Allotted" : "Allotted"),
             borderColor: '#3e95cd',
             backgroundColor: 'lightblue',
             fill: false,

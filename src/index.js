@@ -223,9 +223,6 @@ function GetProviderDetails(state, index, providers) {
     var county = provider[4] !== null ? provider[4].trim() : provider[4];
     var city = provider[3] !== null ? provider[3].trim() : provider[3];
 
-    if (provider[0].startsWith("SEATTLE CANCER")) console.log(provider[0]);
-    if (provider[0].startsWith("SWEDISH MEDICAL")) console.log(provider[0]);
-
     if (provider_state === state_code) { 
       if ((stateFilter === null || stateFilter === state_code) 
          && (zipFilter === null || zipFilter === provider[6].substring(0,5))

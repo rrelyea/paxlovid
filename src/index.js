@@ -57,9 +57,9 @@ const styles = {
     textAlign: 'center',
     background: 'orange',
   },
-  centeredLightYellow: {
+  centeredYellow: {
     textAlign: 'center',
-    background: 'lightyellow',
+    background: 'yellow',
   },
   td: {
     maxWidth: '100px',
@@ -223,13 +223,15 @@ function GetProviderDetails(state, index, providers) {
     var county = provider[4] !== null ? provider[4].trim() : provider[4];
     var city = provider[3] !== null ? provider[3].trim() : provider[3];
 
+    if (provider[0].startsWith("SEATTLE CANCER")) console.log(provider[0]);
+    if (provider[0].startsWith("SWEDISH MEDICAL")) console.log(provider[0]);
+
     if (provider_state === state_code) { 
       if ((stateFilter === null || stateFilter === state_code) 
          && (zipFilter === null || zipFilter === provider[6].substring(0,5))
          && (countyFilter === null || countyFilter === county.toUpperCase())
          && (cityFilter === null || cityFilter === city.toUpperCase())
          ) {
-          
           var providerUpper = provider[0].replaceAll('-',' ').toUpperCase();
           provider_x = toTitleCase(provider[0]);
           if (providerFilter === null || providerUpper.includes(providerFilter) ) {
@@ -560,10 +562,9 @@ function renderPage(states) {
             </div>
             </> : false 
           }
-        {zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ? <div style={dataDate !== null ? styles.centeredOrange : styles.centeredLightYellow}>
+        {zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ? <div style={dataDate !== null ? styles.centeredOrange : styles.centeredYellow}>
           <div style={styles.tinyFont}>&nbsp;</div>
-          <div>Mar 16th NOTE: HHS.gov removed many providers &amp; all allotted data, to peek at the old data check this box:</div>
-          <label ><input type='checkbox' id='showOldData' onClick={oldProvidersClick} defaultChecked={dataDate === "03-15"} /> Show March 15th Providers and Data</label>
+          <div>WARNING: On March 16th, HHS.gov removed many providers &amp; all allotted counts. <label >Peek back at the 3/15 data: <input type='checkbox' id='showOldData' onClick={oldProvidersClick} defaultChecked={dataDate === "03-15"} /></label></div>
         </div> : false }
         <div style={styles.smallerCentered}>&nbsp;</div>
           { GetStateDetails(states.data, dataDate !== null ? mabSites0315.data : mabSites.data) }

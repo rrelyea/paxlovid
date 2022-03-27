@@ -61,3 +61,129 @@ a:hover {
 a:active {
   text-decoration: underline;
 }
+
+  .countyCity {
+    font-Size: 14pt
+  }
+
+  .providerTable {
+    margin-Left: 10px;
+    margin-Top: 30px;
+    margin-Bottom: 30px;
+    margin: 0 auto;
+    border-Collapse: collapse;
+  }
+
+  .doseCount {
+    font-Size: 12pt;
+    vertical-Align: bottom;
+  }
+
+  .doseLabel {
+    vertical-Align: top;
+  }
+
+  .mediumFont {
+    font-Size: 14pt;
+  }
+
+  .smallerCentered {
+    font-Size: 10pt;
+    text-Align: center;
+  }
+
+  .smallerFont {
+    font-Size: 10pt;
+  }
+
+  .eightPointFont {
+    font-Size: 8pt;
+  }
+
+  .tinyFont {
+    font-Size: '5pt'
+  }
+
+  .chooseState {
+    font-Size: 18pt;
+  }
+
+  .mapDiv {
+    margin: 0 auto;
+    height: 250px;
+    width: 350px;
+  }
+
+  .centered {
+    text-Align: center;
+  }
+
+  .centeredOrange {
+    text-Align: center;
+    background: orange;
+  }
+
+  .centeredYellow {
+    text-Align: center;
+    background: yellow;
+  }
+
+  td {
+    max-Width: 100px;
+    vertical-Align: top;
+    word-Wrap: break-word;
+  }
+
+  .tdChart {
+    max-Width: 250px;
+    vertical-Align: top;
+    word-Wrap: break-word;
+  }
+
+  .tdProvider {
+    max-Width: 200px;
+    overflow: hidden;
+    text-Overflow: ellipsis;
+    vertical-Align: top;
+  }
+
+  /* table color theme started with primary color of #f1ec90 and used https://material.io/design/color/the-color-system.html#tools-for-picking-colors */
+
+  th {
+    position: sticky;
+    background-Color: #9095f1;
+    top: 0px;
+    z-Index: 2;
+    font-Size: 20px;
+  }
+
+  .odd {
+    background: white;
+  }
+
+  .even {
+    background: #f1ec90;
+  }
+
+  .stateInfo {
+    background-Color: #f1bb90;
+    text-Align: left;
+  }
+
+  .infoLabels {
+    background-Color: #f1bb90;
+    text-Align: right;
+    padding-Right: 10px;
+  }
+
+  .totals {
+    padding: 0 0;
+    background-Color: #f1bb90;
+  }
+
+  .textArea {
+    height: 300px;
+    width: 600px;
+    white-Space: pre-line;
+    background: lightyellow;
+  }

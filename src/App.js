@@ -98,8 +98,8 @@ function renderPage() {
       complete: function(download) {
         adjacentCounties = download.data;
         var neighboringCounties = document.getElementById('neighboringCounties');
-        while (neighboringCounties.lastElementChild) {
-          neighboringCounties.removeChild(neighboringCounties.lastElementChild);
+        while (neighboringCounties.lastChild) {
+          neighboringCounties.lastChild.remove();
         }
 
         for (var i = 0; i < adjacentCounties.length; i++) {
@@ -112,6 +112,11 @@ function renderPage() {
             neighboringCounties.appendChild(space);
           }
           neighboringCounties.appendChild(a);
+        }
+
+        if (adjacentCounties.length < 1) {
+          var noneStr = document.createTextNode("None");
+          neighboringCounties.appendChild(noneStr);
         }
       }
     });

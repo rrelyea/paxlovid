@@ -7,6 +7,7 @@ import allStates from "./data/allstates.json";
 import DoseViewer from './DoseViewer.js'
 import * as constants from './siteConstants.js';
 import './App.css';
+import TrackVisibility from 'react-on-screen';
 
 var stateFilter = null;
 var countyFilter = null;
@@ -404,7 +405,11 @@ function GetProviderDetails(state, index, providers) {
                 (
                 <>
                 <a href={linkToProvider}>
-                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constants.siteLower} dataDate={dataDate} />
+                  <TrackVisibility>
+                    {({ isVisible }) => isVisible && 
+                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constants.siteLower} dataDate={dataDate} />
+                    }
+                  </TrackVisibility>
                 </a>
                 </>
                 )}

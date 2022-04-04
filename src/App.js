@@ -18,7 +18,7 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
-var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/";
+var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/dev-rrelyea/";
 var dataDate = null;
 
 function toTitleCase(str) {
@@ -372,13 +372,18 @@ function GetProviderDetails(state, index, providers) {
             } else {
               cityMarkup = null;
             }
-            var allotted = dataDate !== null ? toNumber(provider[11]) : 0;; // healthdata.gov no longer publishes allotted doses!
-            var available = dataDate !== null ? toNumber(provider[12]) : toNumber(provider[9]);
-            var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
+            var allotted = dataDate !== null ? toNumber(provider[11]) : 0; // healthdata.gov no longer publishes allotted doses!
+            
+            var availableColNum = dataDate !== null ? 12 : 9;
+            var available = toNumber(provider[availableColNum]);
+
+            var npiColNum = dataDate !== null ? 15 : 11;
+            var npi = provider[npiColNum].trim() === "" ? "" : "NPI# " + parseInt(provider[npiColNum]);
             allottedTotal += allotted === "--" ? 0 : parseInt(allotted);
             availableTotal += available === "--" ? 0 : parseInt(available);
             providerCountTotals += 1;
 
+            var reportDateColNum = dataDate !== null ? 13 : 12;
             return <><tr key={index} className={lastCityStyle}>
               <td>
                 {cityMarkup}
@@ -393,7 +398,7 @@ function GetProviderDetails(state, index, providers) {
               </td>
               <td className='tdChart'>
                 { zipFilter !== null && providerFilter !== null ? (<>
-                  <div><span className='doseCount'>{available}</span> <span className='doseLabel'> avail @{toDate(provider[13])}</span></div>
+                  <div><span className='doseCount'>{available}</span> <span className='doseLabel'> avail @{toDate(provider[reportDateColNum])}</span></div>
                   <div className='tinyFont'>&nbsp;</div>
                 </>) :
                 (

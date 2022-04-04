@@ -1,2 +1,3 @@
-export const site = "Paxlovid";
-export const siteLower = "paxlovid";
+export const site = "Evusheld";
+export const siteLower = "evusheld";
+export const branch = "dev-rrelyea";

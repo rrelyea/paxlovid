@@ -19,7 +19,7 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
-var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/dev-rrelyea/";
+var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constants.branch + "/";
 var dataDate = null;
 
 function toTitleCase(str) {

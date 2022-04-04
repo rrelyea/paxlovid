@@ -123,7 +123,7 @@ function renderPage() {
   }
 
   if (stateFilter !== null && countiesPerState === null) {
-    Papa.parse("https://raw.githubusercontent.com/rrelyea/covid-therapeutics/main/data/counties/per-state/"+stateFilter+".csv", {
+    Papa.parse(baseUri + "data/counties/per-state/"+stateFilter+".csv", {
       download: true,
       complete: function(download) {
         countiesPerState = download.data;
@@ -373,7 +373,7 @@ function GetProviderDetails(state, index, providers) {
               cityMarkup = null;
             }
             var allotted = dataDate !== null ? toNumber(provider[11]) : 0; // healthdata.gov no longer publishes allotted doses!
-            
+
             var availableColNum = dataDate !== null ? 12 : 9;
             var available = toNumber(provider[availableColNum]);
 

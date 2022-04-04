@@ -405,7 +405,7 @@ function GetProviderDetails(state, index, providers) {
                 (
                 <>
                 <a href={linkToProvider}>
-                  <TrackVisibility>
+                  <TrackVisibility partialVisibility>
                     {({ isVisible }) => isVisible && 
                       <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constants.siteLower} dataDate={dataDate} />
                     }

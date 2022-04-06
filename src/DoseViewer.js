@@ -12,7 +12,7 @@ import {
     LineController,
   } from "chart.js";
 import { Chart } from 'react-chartjs-2';
-import * as constants from './siteConstants.js';
+import * as constantsBranch from './constants-branch.js';
 
 class DoseViewer extends React.Component {
     constructor(props) {
@@ -50,7 +50,7 @@ class DoseViewer extends React.Component {
         }
     }
     
-    baseUrl = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constants.branch + "/data/therapeutics/" + this.props.site + "/dose-history-by-zip/";
+    baseUrl = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constantsBranch.branch + "/data/therapeutics/" + this.props.site + "/dose-history-by-zip/";
 
     async toCsv(uri) {
       return new Promise((resolve, reject) => {

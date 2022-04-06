@@ -5,7 +5,8 @@ import ReactDOM from 'react-dom'
 import MapChart from "./MapChart";
 import allStates from "./data/allstates.json";
 import DoseViewer from './DoseViewer.js'
-import * as constants from './siteConstants.js';
+import * as constantsSite from './constants-site.js';
+import * as constantsBranch from './constants-branch.js';
 import './App.css';
 import TrackVisibility from 'react-on-screen';
 
@@ -19,7 +20,7 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
-var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constants.branch + "/";
+var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constantsBranch.branch + "/";
 var dataDate = null;
 
 function toTitleCase(str) {
@@ -154,13 +155,13 @@ function renderPage() {
   pageLocation = window.location.hash;
 
   if (zipFilter !== null && providerFilter !== null) {
-    document.title = constants.site + " '" + toTitleCase(providerFilter) + "'";
+    document.title = constantsSite.site + " '" + toTitleCase(providerFilter) + "'";
   } else {
-    if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constants.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
-    else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constants.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
-    else if (stateFilter !== null) document.title = stateFilter + " " + constants.site + " Providers in " + stateFilter;
-    else if (providerFilter !== null) document.title = constants.site + " '" + toTitleCase(providerFilter) + "'"
-    else document.title = constants.site + " Providers in USA";
+    if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
+    else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
+    else if (stateFilter !== null) document.title = stateFilter + " " + constantsSite.site + " Providers in " + stateFilter;
+    else if (providerFilter !== null) document.title = constantsSite.site + " '" + toTitleCase(providerFilter) + "'"
+    else document.title = constantsSite.site + " Providers in USA";
   }
   var page = 
     <div>
@@ -221,7 +222,7 @@ function NavigationHeader() {
   return zipFilter === null || providerFilter === null ?
     <>
       <div className='centered'>
-        <label className='chooseState' htmlFor='chooseState'>{constants.site} providers in:
+        <label className='chooseState' htmlFor='chooseState'>{constantsSite.site} providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states.data.map((state,index) => 
             <option key={index} value={index > 0 ? state[3].trim(): "< STATE >"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "< state >"}</option>
@@ -244,7 +245,7 @@ function NavigationHeader() {
 function ProviderHeader() {
   return providerFilter !== null & zipFilter !== null ? 
     <>
-      <div className='centered'>{constants.site} Provider: <b>{toTitleCase(providerFilter)}</b></div>
+      <div className='centered'>{constantsSite.site} Provider: <b>{toTitleCase(providerFilter)}</b></div>
       <div>&nbsp;</div>
     </> : false;
 }
@@ -407,7 +408,7 @@ function GetProviderDetails(state, index, providers) {
                 <a href={linkToProvider}>
                   <TrackVisibility partialVisibility offset={1000}>
                     {({ isVisible }) => isVisible && 
-                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constants.siteLower} dataDate={dataDate} />
+                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constantsSite.siteLower} dataDate={dataDate} />
                     }
                   </TrackVisibility>
                 </a>
@@ -418,12 +419,12 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr key={index} className={lastCityStyle}>
                 <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constants.siteLower} dataDate={dataDate} />
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constantsSite.siteLower} dataDate={dataDate} />
                 </td>
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null && constants.site === "Evusheld" ?
+            {zipFilter !== null && providerFilter !== null && constantsSite.site === "Evusheld" ?
               <tr key={index} className={lastCityStyle}>
                 <td colSpan='3'>
                   <br/>
@@ -453,7 +454,7 @@ function GetProviderDetails(state, index, providers) {
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && constants.site === "Evusheld" ?
+            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && constantsSite.site === "Evusheld" ?
               <tr key={index} className={lastCityStyle}>
                 <td colSpan='3'>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
@@ -474,7 +475,7 @@ function GetProviderDetails(state, index, providers) {
       {state[2]} Health Dept:
     </td>
     <td className='stateInfo' colSpan='2'>
-    <span>{state[7] !== "" ? <span>{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7], constants.site)}>{"'" + constants.site + "' search"}</a></span> : false }</span>
+    <span>{state[7] !== "" ? <span>{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7], constantsSite.site)}>{"'" + constantsSite.site + "' search"}</a></span> : false }</span>
       <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
       <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
       <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
@@ -510,7 +511,7 @@ function MedicineNavigator() {
     <>
     <div className='smallerCentered'>&nbsp;</div>
     <div className='smallerCentered'>
-      <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"}>CSV</a>, <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
+      <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>CSV</a>, <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
         <div className='smallerFont'>&nbsp;</div>
         <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a>, <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a>, <a href='https://www.cdc.gov/coronavirus/2019-ncov/testing/self-testing.html'>rapid tests (CDC)</a>, ventilation (<a href='https://www.epa.gov/coronavirus/ventilation-and-coronavirus-covid-19'>EPA</a>, <a href='https://www.cdc.gov/coronavirus/2019-ncov/community/ventilation.html'>CDC</a>), <a href='https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/masks.html'>masking (CDC)</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a>, <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a>, <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a>, <a target='_blank' rel="noreferrer" href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
     </div>
@@ -522,7 +523,7 @@ function Footer() {
   return <>
     <div className='smallerFont'>&nbsp;</div>
     <div className='smallerCentered'>
-      <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Media:</b> <a href='https://github.com/rrelyea/covid-therapeutics/blob/main/data/media/articles.md'>articles</a> <b>Contact:</b> <a href="mailto:rob@relyeas.net">rob@relyeas.net</a>, <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="https://www.instagram.com/p/CbXljI_L0qy/">instagram</a>, <a href="https://www.facebook.com/rrelyea/posts/10228182654571364">facebook</a>, <a href="https://www.reddit.com/user/rrelyea/comments/th1ovj/immunocompromised_discuss_evusheld_with_doctors/">reddit</a>, <a href='https://www.linkedin.com/feed/update/urn:li:activity:6911441764977434624/'>LinkedIn</a>, <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>{'/'+ constants.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
+      <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Media:</b> <a href='https://github.com/rrelyea/covid-therapeutics/blob/main/data/media/articles.md'>articles</a> <b>Contact:</b> <a href="mailto:rob@relyeas.net">rob@relyeas.net</a>, <a href="https://twitter.com/rrelyea">twitter/rrelyea</a>, <a href="https://www.instagram.com/p/CbXljI_L0qy/">instagram</a>, <a href="https://www.facebook.com/rrelyea/posts/10228182654571364">facebook</a>, <a href="https://www.reddit.com/user/rrelyea/comments/th1ovj/immunocompromised_discuss_evusheld_with_doctors/">reddit</a>, <a href='https://www.linkedin.com/feed/update/urn:li:activity:6911441764977434624/'>LinkedIn</a>, <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constantsSite.site.toLowerCase()}>{'/'+ constantsSite.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
     </div>
     <div className='smallerCentered'>&nbsp;</div>
   </>;
@@ -532,7 +533,7 @@ var mabSites = null;
 var states = null;
 
 function load0315Providers() {
-  var providers0315 = baseUri + "data/therapeutics/2022-03-15-Snapshot/"+constants.siteLower+"-data.csv"
+  var providers0315 = baseUri + "data/therapeutics/2022-03-15-Snapshot/"+constantsSite.siteLower+"-data.csv"
   Papa.parse(providers0315, {
     download: true,
     complete: function(mabResults) {
@@ -543,7 +544,7 @@ function load0315Providers() {
 }
 
 function loadData() {
-  var currentProviders = baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"
+  var currentProviders = baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"
   Papa.parse(currentProviders, {
     download: true,
     complete: function(mabResults) {

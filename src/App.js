@@ -171,7 +171,6 @@ function renderPage() {
           <ProviderHeader />
           <HarvestInfo />
           <NeighboringCounties />
-          <Warning />
           <StateDetails />
         </div>
         <MedicineNavigator />
@@ -513,7 +512,7 @@ function MedicineNavigator() {
     <div className='smallerCentered'>
       <b>Gov't:</b> <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">Therapeutics Locator (HHS)</a> <b>Raw data:</b> <a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>CSV</a>, <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a><br/>
         <div className='smallerFont'>&nbsp;</div>
-        <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a>, <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a>, <a href='https://www.cdc.gov/coronavirus/2019-ncov/testing/self-testing.html'>rapid tests (CDC)</a>, ventilation (<a href='https://www.epa.gov/coronavirus/ventilation-and-coronavirus-covid-19'>EPA</a>, <a href='https://www.cdc.gov/coronavirus/2019-ncov/community/ventilation.html'>CDC</a>), <a href='https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/masks.html'>masking (CDC)</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a>, <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a>, <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a>, <a target='_blank' rel="noreferrer" href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
+        <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a>, <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a>, <a href='https://www.cdc.gov/coronavirus/2019-ncov/testing/self-testing.html'>rapid tests (CDC)</a>, ventilation (<a href='https://www.epa.gov/coronavirus/ventilation-and-coronavirus-covid-19'>EPA</a>, <a href='https://www.cdc.gov/coronavirus/2019-ncov/community/ventilation.html'>CDC</a>), <a href='https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/masks.html'>masking (CDC)</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a>, <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a>, <a href={'https://rrelyea.github.io/lagevrio'+window.location.search}>lagevrio</a>
     </div>
     </>
     : false;

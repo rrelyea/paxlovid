@@ -320,7 +320,6 @@ function GetProviderDetails(state, index, providers) {
   }
   if (state[3].trim() === "") return null;
 
-  var allottedTotal = 0;
   var availableTotal = 0;
   var providerCountTotals = 0;
   var firstLink = 0;
@@ -353,7 +352,8 @@ function GetProviderDetails(state, index, providers) {
           var providerUpper = provider[0].replaceAll('-',' ').toUpperCase();
           provider_x = toTitleCase(provider[0]);
           if (providerFilter === null || providerUpper.includes(providerFilter) ) {
-            var linkToProvider = "?provider=" + provider_x.replaceAll(' ', '-') + "&zip=" + provider[6].substring(0,5);
+            // use encodeURIComponent for "#"
+            var linkToProvider = "?provider=" + encodeURIComponent(provider_x.replaceAll(' ', '-')) + "&zip=" + provider[6].substring(0,5);
             var linkToState = "?state=" + state_code;
             var zipCode = provider[6].substring(0,5);
             var linkToCounty = linkToState + "&county=" + county;
@@ -373,14 +373,12 @@ function GetProviderDetails(state, index, providers) {
             } else {
               cityMarkup = null;
             }
-            var allotted = dataDate !== null ? toNumber(provider[11]) : 0; // healthdata.gov no longer publishes allotted doses!
 
             var availableColNum = dataDate !== null ? 12 : 9;
             var available = toNumber(provider[availableColNum]);
 
             var npiColNum = dataDate !== null ? 15 : 11;
             var npi = provider[npiColNum].trim() === "" ? "" : "NPI# " + parseInt(provider[npiColNum]);
-            allottedTotal += allotted === "--" ? 0 : parseInt(allotted);
             availableTotal += available === "--" ? 0 : parseInt(available);
             providerCountTotals += 1;
 
@@ -407,7 +405,7 @@ function GetProviderDetails(state, index, providers) {
                 <a href={linkToProvider}>
                   <TrackVisibility partialVisibility offset={1000}>
                     {({ isVisible }) => isVisible && 
-                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constantsSite.siteLower} dataDate={dataDate} />
+                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} site={constantsSite.siteLower} dataDate={dataDate} />
                     }
                   </TrackVisibility>
                 </a>
@@ -492,8 +490,7 @@ function GetProviderDetails(state, index, providers) {
     <td className='infoLabels'>{cityFilter !== null ? toTitleCase(cityFilter):(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td className='centered'>{providerCountTotals} providers</td>
     <td className='doseCount'>
-      {(allottedTotal > 0 ? (availableTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {(allottedTotal > 0 ? 'Allotted: ' + allottedTotal + (show100kStats ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "") : false) }<br/>
+      {'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
     </td>
   </tr>
   : false;

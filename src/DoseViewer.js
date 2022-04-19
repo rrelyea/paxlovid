@@ -13,6 +13,7 @@ import {
   } from "chart.js";
 import { Chart } from 'react-chartjs-2';
 import * as constantsBranch from './constants-branch.js';
+import * as constantsSite from './constants-site.js';
 
 class DoseViewer extends React.Component {
     constructor(props) {
@@ -160,7 +161,8 @@ class DoseViewer extends React.Component {
         <>
           <div id='doses'>
             <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
-            <div>{this.state.dosesAdministeredTotal} {this.state.dosesAdministeredTotal === 0 ? "doses ever given to patients*" : "doses->patients since " + this.state.firstAdminDate + "*"}</div>
+            {constantsSite.site === "Evusheld" ? <div>{this.state.dosesAdministeredTotal} {this.state.dosesAdministeredTotal === 0 ? "doses ever given to patients*" : "doses->patients since " + this.state.firstAdminDate + "*"}</div>
+            : false }
           </div>
           { this.props.mini !== 'true' ? 
           <div><br/><a href={this.baseUrl + this.props.zipCode + ".csv"}>raw inventory data ({this.props.zipCode+".csv"})</a></div>

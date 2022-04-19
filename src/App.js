@@ -288,7 +288,8 @@ function StateDetails() {
 
 function ExplainDosesAdmin() {
   return <>
-    <div className='smallerCentered'>* - doses given to patients is not published data. We've programmed a best guess, given periodic resupply with boxes of 24 doses each. Contact me if it seems way off. Currently ignores doubling of dose amount.</div>
+    { constantsSite.site === "Evusheld" ? <div className='smallerCentered'>* - doses given to patients is not published data. We've programmed a best guess, given periodic resupply with boxes of 24 doses each. Contact me if it seems way off. Currently ignores doubling of dose amount.</div>
+    : false }
   </>;
 }
 

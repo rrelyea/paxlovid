@@ -111,7 +111,7 @@ class DoseViewer extends React.Component {
               if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null) {
                 if (reportDate !== lastReportDate || available !== lastAvailable) {
                   dosesAdministered = lastAvailable - available;
-                  if (dosesAdministered > 0 && available !== null) {
+                  if (dosesAdministered > 0 && dosesAdministered < 25 && available !== null) {
                     this.state.dosesAdministeredTotal += dosesAdministered;
                     if (this.state.firstAdminDate === null) {
                       this.state.firstAdminDate = lastReportDate;

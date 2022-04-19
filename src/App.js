@@ -172,6 +172,7 @@ function renderPage() {
           <HarvestInfo />
           <NeighboringCounties />
           <StateDetails />
+          <ExplainDosesAdmin />
         </div>
         <MedicineNavigator />
         <Footer />
@@ -282,6 +283,12 @@ function StateDetails() {
   return <>
     <div className='smallerCentered'>&nbsp;</div>
     { GetStateDetails(states.data, dataDate !== null ? mabSites0315.data : mabSites.data) }
+  </>;
+}
+
+function ExplainDosesAdmin() {
+  return <>
+    <div className='smallerCentered'>* - doses given to patients is not published data. We've programmed a best guess, given periodic resupply with boxes of 24 doses each. Contact me if it seems way off. Currently ignores doubling of dose amount.</div>
   </>;
 }
 

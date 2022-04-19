@@ -18,6 +18,8 @@ class DoseViewer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            dosesAdministeredTotal: 0,
+            firstAdminDate: null,
             mounted: false,
             availableData: [],
             doseInfo: null,
@@ -99,6 +101,7 @@ class DoseViewer extends React.Component {
         
           var lastReportDate;
           var lastAvailable;
+          var dosesAdministered;
           for (var i = 0; i < this.state.doseInfo.length; i++) {
               var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
               var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
@@ -106,6 +109,25 @@ class DoseViewer extends React.Component {
 
               if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null) {
                 if (reportDate !== lastReportDate || available !== lastAvailable) {
+                  dosesAdministered = lastAvailable - available;
+                  if (dosesAdministered > 0 && available !== null) {
+                    this.state.dosesAdministeredTotal += dosesAdministered;
+                    if (this.state.firstAdminDate === null) {
+                      this.state.firstAdminDate = lastReportDate;
+                    }
+                  }
+                  else if (dosesAdministered < 0)
+                  {
+                    if (dosesAdministered < -12) {
+                      var boxes = Math.ceil(Math.abs(dosesAdministered) / 24);
+                      var administeredToday = (boxes * 24) + dosesAdministered;
+                      this.state.dosesAdministeredTotal += administeredToday;
+                      if (administeredToday > 0 && this.state.firstAdminDate === null) {
+                        this.state.firstAdminDate = lastReportDate;
+                      }
+                    } 
+                  }
+
                   this.state.chartData.labels[j] = reportDate;
                   this.state.availableData[j] = available;
                   j = j + 1;
@@ -138,6 +160,7 @@ class DoseViewer extends React.Component {
         <>
           <div id='doses'>
             <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
+            <div>{this.state.dosesAdministeredTotal} {this.state.dosesAdministeredTotal === 0 ? "doses ever given to patients*" : "doses->patients since " + this.state.firstAdminDate + "*"}</div>
           </div>
           { this.props.mini !== 'true' ? 
           <div><br/><a href={this.baseUrl + this.props.zipCode + ".csv"}>raw inventory data ({this.props.zipCode+".csv"})</a></div>

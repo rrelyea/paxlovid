@@ -75,9 +75,9 @@ class DoseViewer extends React.Component {
       }
     }
 
-    GetDate(date,start=0) {
+    GetDate(date,start=0,len=5) {
       if (date === null || date === undefined || date === "" || date === "NLP") return null;
-      return date.substring(start,start+5);
+      return date.substring(start,start+len);
     }
     
     GetDoses(dose) {
@@ -101,20 +101,22 @@ class DoseViewer extends React.Component {
           j = j + 1;
         
           var lastReportDate;
+          var lastFullReportDate;
           var lastAvailable;
           var dosesAdministered;
           for (var i = 0; i < this.state.doseInfo.length; i++) {
               var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
               var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
+              var fullReportDate = this.GetDate(this.state.doseInfo[i][0], 0, 10);
               var available = this.GetDoses(this.state.doseInfo[i][6]);
 
               if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null) {
                 if (reportDate !== lastReportDate || available !== lastAvailable) {
                   dosesAdministered = lastAvailable - available;
-                  if (dosesAdministered > 0 && dosesAdministered < 25 && available !== null) {
+                  if (dosesAdministered > 0 && dosesAdministered < 24 && available !== null) {
                     this.state.dosesAdministeredTotal += dosesAdministered;
                     if (this.state.firstAdminDate === null) {
-                      this.state.firstAdminDate = lastReportDate;
+                      this.state.firstAdminDate = lastFullReportDate;
                     }
                   }
                   else if (dosesAdministered < 0)
@@ -124,7 +126,7 @@ class DoseViewer extends React.Component {
                       var administeredToday = (boxes * 24) + dosesAdministered;
                       this.state.dosesAdministeredTotal += administeredToday;
                       if (administeredToday > 0 && this.state.firstAdminDate === null) {
-                        this.state.firstAdminDate = lastReportDate;
+                        this.state.firstAdminDate = lastFullReportDate;
                       }
                     } 
                   }
@@ -133,6 +135,7 @@ class DoseViewer extends React.Component {
                   this.state.availableData[j] = available;
                   j = j + 1;
                   lastReportDate = reportDate;
+                  lastFullReportDate = fullReportDate;
                   lastAvailable = available;
                 }
               }
@@ -157,11 +160,22 @@ class DoseViewer extends React.Component {
     }
 
     render() {
+        var firstAdmin = new Date(this.state.firstAdminDate);  
+        var today = new Date();  
+        var msInDay = 24 * 60 * 60 * 1000;
+        today.setHours(0,0,0,0);
+        firstAdmin.setHours(0,0,0,0);
+        var dayDiff = (+today - +firstAdmin)/msInDay;
+
         return (
         <>
           <div id='doses'>
             <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
-            {constantsSite.site === "Evusheld" ? <div>{this.state.dosesAdministeredTotal} {this.state.dosesAdministeredTotal === 0 ? "doses ever given to patients*" : "doses->patients since " + this.state.firstAdminDate + "*"}</div>
+            {constantsSite.site === "Evusheld" ? 
+            <><div title={this.state.dosesAdministeredTotal + " " + (this.state.dosesAdministeredTotal === 0 ? "doses ever given to patients" : "doses->patients since " + this.state.firstAdminDate)}>
+              {this.state.dosesAdministeredTotal + " doses->patients (" + (this.state.dosesAdministeredTotal/dayDiff*7).toFixed(1)} per wk)*
+              </div>
+            </>
             : false }
           </div>
           { this.props.mini !== 'true' ? 

@@ -171,8 +171,8 @@ function renderPage() {
           <ProviderHeader />
           <HarvestInfo />
           <NeighboringCounties />
-          <StateDetails />
           <ExplainDosesAdmin />
+          <StateDetails />
         </div>
         <MedicineNavigator />
         <Footer />
@@ -288,7 +288,11 @@ function StateDetails() {
 
 function ExplainDosesAdmin() {
   return <>
-    { constantsSite.site === "Evusheld" ? <div className='smallerCentered'>* - doses given to patients is not published data. We've programmed a best guess, given periodic resupply with boxes of 24 doses each. Contact me if it seems way off. Currently ignores doubling of dose amount.</div>
+    { (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) && constantsSite.site === "Evusheld" ? 
+    <>
+    <div className='tinyFont'>&nbsp;</div>
+    <div className='smallerCentered'>* - doses given to patients is calculated data, not published data. We've programmed a best guess. Contact me if it seems way off.</div>
+    </>
     : false }
   </>;
 }

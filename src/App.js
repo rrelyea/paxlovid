@@ -531,7 +531,7 @@ function Footer() {
   return <>
     <div className='smallerFont'>&nbsp;</div>
     <div className='smallerCentered'>
-      <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Contact Info:</b> <a href='https://twitter.com/rrelyea'>twitter</a>, <a href='https://linktr.ee/rrelyea'>email/more</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buymeacoffee.com/rrelyea</a>, <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constantsSite.site.toLowerCase()}>{'/'+ constantsSite.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
+      <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Contact Info:</b> <a href='https://twitter.com/rrelyea'>twitter</a>, <a href='https://linktr.ee/rrelyea'>email/more</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a>, <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constantsSite.site.toLowerCase()}>{'/'+ constantsSite.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
     </div>
     <div className='smallerCentered'>&nbsp;</div>
   </>;

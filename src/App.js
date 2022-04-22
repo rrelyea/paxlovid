@@ -251,9 +251,11 @@ function ProviderHeader() {
 }
 
 function HarvestInfo() {
-  return <div className='smallerCentered'>
-    [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
-  </div>;
+  return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
+  <div className='smallerCentered'>
+    [<a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
+  </div>
+  : false;
 }
 
 function NeighboringCounties() {

@@ -52,6 +52,8 @@ class DoseViewer extends React.Component {
         }
     }
     
+    msInDay = 24 * 60 * 60 * 1000;
+    
     baseUrl = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constantsBranch.branch + "/data/therapeutics/" + this.props.site + "/dose-history-by-zip/";
 
     async toCsv(uri) {
@@ -112,6 +114,7 @@ class DoseViewer extends React.Component {
 
               if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null) {
                 if (reportDate !== lastReportDate || available !== lastAvailable) {
+                  var dayDiff = this.getDays(new Date(lastReportDate), new Date(reportDate));
                   dosesAdministered = lastAvailable - available;
                   if (dosesAdministered > 0 && dosesAdministered < 24 && available !== null) {
                     this.state.dosesAdministeredTotal += dosesAdministered;
@@ -158,22 +161,25 @@ class DoseViewer extends React.Component {
     getDoses () {
         return this.state.doseInfo[3][2];
     }
-
+    getDays(day1, day2) {
+      day1.setHours(0,0,0,0);
+      day2.setHours(0,0,0,0);
+      return (+day2 - +day1)/this.msInDay
+    }
     render() {
-        var firstAdmin = new Date(this.state.firstAdminDate);  
-        var today = new Date();  
-        var msInDay = 24 * 60 * 60 * 1000;
-        today.setHours(0,0,0,0);
-        firstAdmin.setHours(0,0,0,0);
-        var dayDiff = (+today - +firstAdmin)/msInDay;
+        var dayDiff = this.getDays(new Date(this.state.firstAdminDate), new Date());
 
         return (
         <>
           <div id='doses'>
             <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
             {constantsSite.site === "Evusheld" ? 
-            <><div title={this.state.dosesAdministeredTotal + " " + (this.state.dosesAdministeredTotal === 0 ? "doses ever given to patients" : "doses->patients since " + this.state.firstAdminDate)}>
-              {this.state.dosesAdministeredTotal + " doses->patients (" + (this.state.dosesAdministeredTotal/dayDiff*7).toFixed(1)} per wk)*
+            <>
+              <div>
+                Gives about {(this.state.dosesAdministeredTotal/dayDiff*7).toFixed(0)} doses a week.
+              </div>
+              <div title={this.state.dosesAdministeredTotal + " " + (this.state.dosesAdministeredTotal === 0 ? "doses ever given to patients" : "doses->patients since " + this.state.firstAdminDate)}>
+                Has given {this.state.dosesAdministeredTotal} doses total.*
               </div>
             </>
             : false }

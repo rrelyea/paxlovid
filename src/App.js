@@ -56,6 +56,7 @@ function SwapKeyword(url, keyword) {
 }
 
 function navigateTo(state, county) {
+  shotsGiven.ClearDoses();
   const params = new URLSearchParams(window.location.search);
   if (state !== "< STATE >" && state !== "" && state !== null) { 
     params.set('state', state);
@@ -224,9 +225,9 @@ function NavigationHeader() {
       <div className='centered'>
         <label className='chooseState' htmlFor='chooseState'>{constantsSite.site} providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
-          {states.data.map((state,index) => 
+          {states != null ? states.data.map((state,index) => 
             <option key={index} value={index > 0 ? state[3].trim(): "< STATE >"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "< state >"}</option>
-          )} 
+          ) : false } 
         </select> { stateFilter !== null ? <> <select className='mediumFont' id='chooseCounty' onChange={(e) => handleCountyChange(e)}>
           </select> { countyFilter !== null ? <a href={linkToState}>(clear)</a> : false }
         </> : false
@@ -284,7 +285,7 @@ function Warning() {
 function StateDetails() {
   return <>
     <div className='smallerCentered'>&nbsp;</div>
-    { GetStateDetails(states.data, dataDate !== null ? mabSites0315.data : mabSites.data) }
+    { states !== null ? GetStateDetails(states.data, dataDate !== null ? mabSites0315.data : mabSites.data) : false }
   </>;
 }
 
@@ -317,6 +318,21 @@ function GetStateDetails(states, providers) {
         </table>
       </>
     : false;
+}
+
+var shotsGiven = new Object();
+shotsGiven.Doses = 0;
+
+shotsGiven.AddDoses = function AddDoses(count) {
+  shotsGiven.Doses = shotsGiven.Doses + count;
+  var shotsGivenHolder = document.getElementById('shotsGivenHolder');
+  if (shotsGivenHolder !== null) shotsGivenHolder.innerText = shotsGiven.Doses;
+}
+
+shotsGiven.ClearDoses = function ClearDoses() {
+  shotsGiven.Doses = 0;
+  var shotsGivenHolder = document.getElementById('shotsGivenHolder');
+  if (shotsGivenHolder !== null) shotsGivenHolder.innerText = 0;
 }
 
 function GetProviderDetails(state, index, providers) {
@@ -418,8 +434,9 @@ function GetProviderDetails(state, index, providers) {
                 <>
                 <a href={linkToProvider}>
                   <TrackVisibility partialVisibility offset={1000}>
-                    {({ isVisible }) => isVisible && 
-                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} site={constantsSite.siteLower} dataDate={dataDate} />
+                    {({ isVisible }) =>  
+                      <DoseViewer showChart={isVisible} zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
+                        site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven} />
                     }
                   </TrackVisibility>
                 </a>
@@ -505,6 +522,7 @@ function GetProviderDetails(state, index, providers) {
     <td className='centered'>{providerCountTotals} providers</td>
     <td className='doseCount'>
       {'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      Doses Given: <span id='shotsGivenHolder'>0</span>*
     </td>
   </tr>
   : false;

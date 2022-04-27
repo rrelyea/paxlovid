@@ -51,7 +51,7 @@ class DoseViewer extends React.Component {
             }
         }
     }
-    
+
     msInDay = 24 * 60 * 60 * 1000;
     
     baseUrl = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constantsBranch.branch + "/data/therapeutics/" + this.props.site + "/dose-history-by-zip/";
@@ -144,6 +144,7 @@ class DoseViewer extends React.Component {
               }
           }
 
+          this.props.shotsGiven.AddDoses(this.state.dosesAdministeredTotal);
           this.state.chartData.datasets = [{
             data: this.state.availableData,
             label: this.props.mini !== 'true' ? "Doses Available (in stock)" : this.props.available + " Doses Available",
@@ -151,7 +152,7 @@ class DoseViewer extends React.Component {
             backgroundColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
             fill: false,
           }];
-          if (this.state.mounted) {
+          if (this.state.mounted && this.props.showChart) {
             this.setState({chartData:this.state.chartData});
           }
         }

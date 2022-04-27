@@ -321,18 +321,22 @@ function GetStateDetails(states, providers) {
 }
 
 var shotsGiven = new Object();
-shotsGiven.Doses = 0;
+shotsGiven.AddDoses = function NoOp(count) {}
 
-shotsGiven.AddDoses = function AddDoses(count) {
+if (constantsSite.site === "Evusheld") {
+  shotsGiven.Doses = 0;
+
+  shotsGiven.AddDoses = function AddDoses(count) {
   shotsGiven.Doses = shotsGiven.Doses + count;
   var shotsGivenHolder = document.getElementById('shotsGivenHolder');
   if (shotsGivenHolder !== null) shotsGivenHolder.innerText = shotsGiven.Doses;
-}
+  }
 
-shotsGiven.ClearDoses = function ClearDoses() {
+  shotsGiven.ClearDoses = function ClearDoses() {
   shotsGiven.Doses = 0;
   var shotsGivenHolder = document.getElementById('shotsGivenHolder');
   if (shotsGivenHolder !== null) shotsGivenHolder.innerText = 0;
+  }
 }
 
 function GetProviderDetails(state, index, providers) {
@@ -430,18 +434,23 @@ function GetProviderDetails(state, index, providers) {
                   <div><span className='doseCount'>{available}</span> <span className='doseLabel'> avail @{toDate(provider[reportDateColNum])}</span></div>
                   <div className='tinyFont'>&nbsp;</div>
                 </>) :
-                (
+                (constantsSite.site === "Evusheld") ? <>
+                <a href={linkToProvider}>
+                  <TrackVisibility partialVisibility offset={1000}>
+                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
+                        site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven} />
+                  </TrackVisibility>
+                </a>
+                </> : 
                 <>
                 <a href={linkToProvider}>
                   <TrackVisibility partialVisibility offset={1000}>
-                    {({ isVisible }) =>  
-                      <DoseViewer showChart={isVisible} zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
-                        site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven} />
+                    {({ isVisible }) =>  isVisible && <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
+                        site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven}/>
                     }
                   </TrackVisibility>
                 </a>
-                </>
-                )}
+                </>}
               </td>
             </tr>
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
@@ -521,8 +530,8 @@ function GetProviderDetails(state, index, providers) {
     <td className='infoLabels'>{cityFilter !== null ? toTitleCase(cityFilter):(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td className='centered'>{providerCountTotals} providers</td>
     <td className='doseCount'>
-      {'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      Doses Given: <span id='shotsGivenHolder'>0</span>*
+      {'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}
+      {constantsSite.site == "Evusheld" ? <><br/>Doses Given: <span id='shotsGivenHolder'>0</span>*</> : false }
     </td>
   </tr>
   : false;

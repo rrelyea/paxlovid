@@ -152,7 +152,7 @@ class DoseViewer extends React.Component {
             backgroundColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
             fill: false,
           }];
-          if (this.state.mounted && this.props.showChart) {
+          if (this.state.mounted) {
             this.setState({chartData:this.state.chartData});
           }
         }

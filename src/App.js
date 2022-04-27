@@ -322,6 +322,7 @@ function GetStateDetails(states, providers) {
 
 var shotsGiven = new Object();
 shotsGiven.AddDoses = function NoOp(count) {}
+shotsGiven.ClearDoses = function NoOp() {}
 
 if (constantsSite.site === "Evusheld") {
   shotsGiven.Doses = 0;

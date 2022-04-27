@@ -320,7 +320,7 @@ function GetStateDetails(states, providers) {
     : false;
 }
 
-var shotsGiven = new Object();
+var shotsGiven = {};
 shotsGiven.AddDoses = function NoOp(count) {}
 shotsGiven.ClearDoses = function NoOp() {}
 
@@ -457,7 +457,7 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr key={index} className={lastCityStyle}>
                 <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constantsSite.siteLower} dataDate={dataDate} />
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven} />
                 </td>
               </tr>
               :false
@@ -495,7 +495,7 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation!=="" && constantsSite.site === "Evusheld" ?
               <tr key={index} className={lastCityStyle}>
                 <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} />
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} shotsGiven={shotsGiven} />
                 </td>
               </tr>
               :false
@@ -532,7 +532,7 @@ function GetProviderDetails(state, index, providers) {
     <td className='centered'>{providerCountTotals} providers</td>
     <td className='doseCount'>
       {'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}
-      {constantsSite.site == "Evusheld" ? <><br/>Doses Given: <span id='shotsGivenHolder'>0</span>*</> : false }
+      {constantsSite.site === "Evusheld" ? <><br/>Doses Given: <span id='shotsGivenHolder'>0</span>*</> : false }
     </td>
   </tr>
   : false;
@@ -559,7 +559,7 @@ function Footer() {
   return <>
     <div className='smallerFont'>&nbsp;</div>
     <div className='smallerCentered'>
-      <b>Why:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>why I built this site</a> <b>Contact Info:</b> <a href='https://twitter.com/rrelyea'>twitter</a>, <a href='https://linktr.ee/rrelyea'>email/more</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a>, <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constantsSite.site.toLowerCase()}>{'/'+ constantsSite.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
+      <b>Why I built this site:</b> <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>geekwire</a>, <a href='https://cnn.com/2022/04/13/opinions/evusheld-immunocompromised-covid-19-equity-relyea/index.html'>CNN op-ed</a> <b>Contact Info:</b> <a href='https://twitter.com/rrelyea'>twitter</a>, <a href='https://linktr.ee/rrelyea'>email/more</a> <b>Sponsor:</b> <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee?</a> <b>Programmers:</b> <a href={"https://github.com/rrelyea/"+constantsSite.site.toLowerCase()}>{'/'+ constantsSite.siteLower}</a>, <a href="https://github.com/rrelyea/covid-therapeutics">/covid-therapeutics</a>
     </div>
     <div className='smallerCentered'>&nbsp;</div>
   </>;

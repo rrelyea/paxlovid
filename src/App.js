@@ -81,11 +81,11 @@ function navigateTo(state, county) {
 }
 
 function renderPage() {
-  if (states === null || mabSites === null) {
+  if (states === null || mabSites === null || testToTreat === null) {
     return;
   }
 
-  if (states !== null && dataDate !== null && mabSites0315 === null) {
+  if (states !== null && dataDate !== null && testToTreat !== null && mabSites0315 === null) {
     load0315Providers();
     return;
   }
@@ -413,6 +413,9 @@ function GetProviderDetails(state, index, providers) {
             var available = toNumber(provider[availableColNum]);
 
             var npiColNum = dataDate !== null ? 15 : 11;
+            var geocodeNum = 10;
+            var geoCode = provider[geocodeNum];
+            var testToTreatData = geoCode in testToTreat ? testToTreat[geoCode] : null;
             var npi = provider[npiColNum].trim() === "" ? "" : "NPI# " + parseInt(provider[npiColNum]);
             availableTotal += available === "--" ? 0 : parseInt(available);
             providerCountTotals += 1;
@@ -425,6 +428,8 @@ function GetProviderDetails(state, index, providers) {
               <td className='tdProvider'>
                 <div className='mediumFont'><a href={linkToProvider}>{provider_x}</a></div>
                 <div>{toTitleCase(provider[1])}</div>
+                { testToTreatData !== null && testToTreatData[7] !== "" ? <div><a href={testToTreatData[7]}>TestToTreat Link</a></div> : false }
+                { testToTreatData !== null && testToTreatData[7] === "" ? <div>TestToTreat Site</div> : false }
                 { zipFilter !== null && providerFilter !== null ? <div>{toTitleCase(provider[2])}</div> : false }
                 { zipFilter !== null && providerFilter !== null ? <div>{provider[6]}</div> : false }
                 { zipFilter !== null && providerFilter !== null ? <div>{npi}</div> : false }
@@ -567,6 +572,7 @@ function Footer() {
 var mabSites0315 = null;
 var mabSites = null;
 var states = null;
+var testToTreat = null;
 
 function load0315Providers() {
   var providers0315 = baseUri + "data/therapeutics/2022-03-15-Snapshot/"+constantsSite.siteLower+"-data.csv"
@@ -612,6 +618,22 @@ function loadData() {
       renderPage();
     }
   });
+
+  if (constantsSite.siteLower === "paxlovid") {
+    testToTreat = {};
+    Papa.parse(baseUri + "data/therapeutics/testToTreat/testToTreat-providers.csv", {
+      download: true,
+      complete: function(testToTreatResults) {
+        testToTreatResults.data.forEach((provider)=> {
+          testToTreat[provider[9]] = provider;
+        });
+        renderPage();
+      }
+    });
+  } else {
+    testToTreat = {};
+  }
+
 }
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

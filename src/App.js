@@ -439,7 +439,7 @@ function GetProviderDetails(state, index, providers) {
                 <a href={linkToProvider}>
                   <TrackVisibility partialVisibility offset={1000}>
                       <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
-                        site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven} />
+                        site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} />
                   </TrackVisibility>
                 </a>
                 </> : 
@@ -447,7 +447,7 @@ function GetProviderDetails(state, index, providers) {
                 <a href={linkToProvider}>
                   <TrackVisibility partialVisibility offset={1000}>
                     {({ isVisible }) =>  isVisible && <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
-                        site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven}/>
+                        site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven}/>
                     }
                   </TrackVisibility>
                 </a>
@@ -457,7 +457,7 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr key={index} className={lastCityStyle}>
                 <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constantsSite.siteLower} dataDate={dataDate} shotsGiven={shotsGiven} />
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} available={available} site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} />
                 </td>
               </tr>
               :false

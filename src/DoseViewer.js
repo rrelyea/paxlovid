@@ -23,6 +23,7 @@ class DoseViewer extends React.Component {
             firstAdminDate: null,
             mounted: false,
             availableData: [],
+            noReportsData: [],
             doseInfo: null,
             chartData:
             {
@@ -100,9 +101,11 @@ class DoseViewer extends React.Component {
           var j = 0;
           this.state.chartData.labels[j] = "";
           this.state.availableData[j] = 0;
+          this.state.noReportsData[j] = 0;
           j = j + 1;
         
           var lastReportDate;
+          var lastPopDataDate;
           var lastFullReportDate;
           var lastAvailable;
           var dosesAdministered;
@@ -110,6 +113,7 @@ class DoseViewer extends React.Component {
               var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
               var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
               var fullReportDate = this.GetDate(this.state.doseInfo[i][0], 0, 10);
+              var popDataDate = this.GetDate(this.state.doseInfo[i][7], 0, 10);
               var available = this.GetDoses(this.state.doseInfo[i][6]);
 
               if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null) {
@@ -135,9 +139,15 @@ class DoseViewer extends React.Component {
                   }
 
                   this.state.chartData.labels[j] = reportDate;
-                  this.state.availableData[j] = available;
+                  if (lastPopDataDate !== popDataDate) {
+                    this.state.availableData[j] = available;
+                  } else {
+                    this.state.noReportsData[j] = available;
+                  }
+
                   j = j + 1;
                   lastReportDate = reportDate;
+                  lastPopDataDate = popDataDate;
                   lastFullReportDate = fullReportDate;
                   lastAvailable = available;
                 }
@@ -147,9 +157,17 @@ class DoseViewer extends React.Component {
           this.props.shotsGiven.AddDoses(this.state.dosesAdministeredTotal);
           this.state.chartData.datasets = [{
             data: this.state.availableData,
-            label: this.props.mini !== 'true' ? "Doses Available (in stock)" : this.props.available + " Doses Available",
+            label: this.props.mini !== 'true' ? "Doses Reported (in stock)" : "Doses",
             borderColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
             backgroundColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
+            fill: false,
+          },
+          {
+            data: this.state.noReportsData,
+            label: this.props.mini !== 'true' ? "No Updates" : "No Updates",
+            borderColor: this.props.dataDate !== null ? '#616161' : '#616161',
+            pointRadius: '0',
+            backgroundColor: this.props.dataDate !== null ? '#616161' : '#616161',
             fill: false,
           }];
           if (this.state.mounted) {
@@ -174,6 +192,9 @@ class DoseViewer extends React.Component {
         <>
           <div id='doses'>
             <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
+            <div> 
+                {this.props.available} doses available as of {this.props.popUpdate}
+            </div>
             {constantsSite.site === "Evusheld" ? 
             <>
               <div>

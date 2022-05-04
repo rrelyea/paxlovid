@@ -141,9 +141,9 @@ class DoseViewer extends React.Component {
                   this.state.chartData.labels[j] = reportDate;
                   if (lastPopDataDate !== popDataDate) {
                     this.state.availableData[j] = available;
-                  } else {
-                    this.state.noReportsData[j] = available;
                   }
+
+                  this.state.noReportsData[j] = available;
 
                   j = j + 1;
                   lastReportDate = reportDate;

@@ -152,7 +152,7 @@ function renderPage() {
 
   cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
   zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
-  providerFilter = urlParams.has('provider') ? urlParams.get('provider').toUpperCase().replaceAll('-',' ') : null;
+  providerFilter = urlParams.has('provider') ? toTitleCase(urlParams.get('provider')).replaceAll('-',' ') : null;
   pageLocation = window.location.hash;
 
   if (zipFilter !== null && providerFilter !== null) {
@@ -173,7 +173,7 @@ function renderPage() {
           <HarvestInfo />
           <NeighboringCounties />
           <ExplainDosesAdmin />
-          <StateDetails />
+          <NationalDetails />
         </div>
         <MedicineNavigator />
         <Footer />
@@ -282,10 +282,10 @@ function Warning() {
         </div> : false;
 }
 
-function StateDetails() {
+function NationalDetails() {
   return <>
     <div className='smallerCentered'>&nbsp;</div>
-    { states !== null ? GetStateDetails(states.data, dataDate !== null ? mabSites0315.data : mabSites.data) : false }
+    { states !== null ? GetNationalDetails(states.data, dataDate !== null ? mabSites0315.data : mabSites.data) : false }
   </>;
 }
 
@@ -300,9 +300,9 @@ function ExplainDosesAdmin() {
   </>;
 }
 
-function GetStateDetails(states, providers) {
+function GetNationalDetails(states, providers) {
   const Providers = states.map((state,index) => {
-    return GetProviderDetails(state, index, providers);
+    return GetStateDetails(state, index, providers);
   })
   return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null)
       ? <>
@@ -314,7 +314,9 @@ function GetStateDetails(states, providers) {
               <th>Doses</th>
             </tr>
           </thead>
+          <tbody>
           {Providers}
+          </tbody>
         </table>
       </>
     : false;
@@ -339,20 +341,20 @@ if (constantsSite.site === "Evusheld") {
   if (shotsGivenHolder !== null) shotsGivenHolder.innerText = 0;
   }
 }
+const updateTextArea = () =>  {
+  var mailtoLink = document.getElementById("mailtoLink");
+  var textArea = document.getElementById("textArea");
+  body = textArea.value;
+  var subject = "Info about: " + toTitleCase(providerFilter)+' ('+zipFilter + ')';
+  var email="evusheld-data@relyeas.net" 
 
-function GetProviderDetails(state, index, providers) {
-  const updateTextArea = () =>  {
-    var mailtoLink = document.getElementById("mailtoLink");
-    var textArea = document.getElementById("textArea");
-    body = textArea.value;
-    var subject = "Info about: " + toTitleCase(providerFilter)+' ('+zipFilter + ')';
-    var email="evusheld-data@relyeas.net" 
+  let params = subject || body ? '?' : '';
+  if (subject) params += `subject=${encodeURIComponent(subject)}`;
+  if (body) params += `${subject ? '&' : ''}body=${encodeURIComponent(body)}`;
+  mailtoLink.href= `mailto:${email}${params}`;
+}
 
-    let params = subject || body ? '?' : '';
-    if (subject) params += `subject=${encodeURIComponent(subject)}`;
-    if (body) params += `${subject ? '&' : ''}body=${encodeURIComponent(body)}`;
-    mailtoLink.href= `mailto:${email}${params}`;
-  }
+function GetStateDetails(state, index, providers) {
   if (state[3].trim() === "") return null;
 
   var availableTotal = 0;
@@ -366,153 +368,160 @@ function GetProviderDetails(state, index, providers) {
   var lastState = "";
   var lastCityStyle = null;
   var cityMarkup = null;
-  var providerList = providers.map((provider, index) => {
+  if (stateFilter !== null && stateFilter !== state_code) return false;
+
+  var providerList = providers.filter((provider) => provider[5] === state_code && 
+  ((stateFilter === null || stateFilter === state_code) 
+  && (zipFilter === null || zipFilter === provider[6].substring(0,5))
+  && (countyFilter === null || countyFilter === provider[4].toUpperCase())
+  && (cityFilter === null || cityFilter === provider[3].toUpperCase()))
+        ).map((provider, index) => {
     // ignore blank lines in provider file
     if (provider.length === 1) 
     {
       return false;
     }
 
-    const provider_state = provider[5].trim();
     var provider_x = null;
-    var county = provider[4] !== null ? provider[4].trim() : provider[4];
-    var city = provider[3] !== null ? provider[3].trim() : provider[3];
+    var county = provider[4];
+    var city = provider[3];
 
-    if (provider_state === state_code) { 
-      if ((stateFilter === null || stateFilter === state_code) 
-         && (zipFilter === null || zipFilter === provider[6].substring(0,5))
-         && (countyFilter === null || countyFilter === county.toUpperCase())
-         && (cityFilter === null || cityFilter === city.toUpperCase())
-         ) {
-          var providerUpper = provider[0].replaceAll('-',' ').toUpperCase();
-          provider_x = toTitleCase(provider[0]);
-          if (providerFilter === null || providerUpper.includes(providerFilter) ) {
-            // use encodeURIComponent for "#"
-            var linkToProvider = "?provider=" + encodeURIComponent(provider_x.replaceAll(' ', '-')) + "&zip=" + provider[6].substring(0,5);
-            var linkToState = "?state=" + state_code;
-            var zipCode = provider[6].substring(0,5);
-            var linkToCounty = linkToState + "&county=" + county;
-            var linkToCity = linkToState + "&city=" + city;
-            var firstRowOfCity = lastCity !== toTitleCase(city) || lastCounty !== county || lastState !== state_code;
-            if (firstRowOfCity) {
-              lastCity = toTitleCase(city); 
-              lastState = state_code;
-              lastCounty = county;
-              cityMarkup = 
-              <div className='countyCity'>
-                <a href={linkToState}>{state_code}</a><br/>
-                <a href={linkToCounty}>{toTitleCase(county)}</a><br/>
-                <a href={linkToCity}>{toTitleCase(city)}</a>
-              </div>;
-              lastCityStyle = lastCityStyle === "odd" ? "even" : "odd";
-            } else {
-              cityMarkup = null;
-            }
-
-            var availableColNum = dataDate !== null ? 12 : 9;
-            var available = toNumber(provider[availableColNum]);
-
-            var npiColNum = dataDate !== null ? 15 : 11;
-            var geocodeNum = 10;
-            var geoCode = provider[geocodeNum];
-            var testToTreatData = geoCode in testToTreat ? testToTreat[geoCode] : null;
-            var npi = provider[npiColNum].trim() === "" ? "" : "NPI# " + parseInt(provider[npiColNum]);
-            availableTotal += available === "--" ? 0 : parseInt(available);
-            providerCountTotals += 1;
-
-            var reportDateColNum = dataDate !== null ? 13 : 12;
-            return <><tr key={index} className={lastCityStyle}>
-              <td>
-                {cityMarkup}
-              </td>
-              <td className='tdProvider'>
-                <div className='mediumFont'><a href={linkToProvider}>{provider_x}</a></div>
-                <div>{toTitleCase(provider[1])}</div>
-                { testToTreatData !== null && testToTreatData[7] !== "" ? <div><a href={testToTreatData[7]}>TestToTreat Link</a></div> : false }
-                { testToTreatData !== null && testToTreatData[7] === "" ? <div>TestToTreat Site</div> : false }
-                { zipFilter !== null && providerFilter !== null ? <div>{toTitleCase(provider[2])}</div> : false }
-                { zipFilter !== null && providerFilter !== null ? <div>{provider[6]}</div> : false }
-                { zipFilter !== null && providerFilter !== null ? <div>{npi}</div> : false }
-                <div className='tinyFont'>&nbsp;</div>
-              </td>
-              <td className='tdChart'>
-                { zipFilter !== null && providerFilter !== null ? (<>
-                  <div><span className='doseCount'>{available}</span> <span className='doseLabel'> avail @{toDate(provider[reportDateColNum])}</span></div>
-                  <div className='tinyFont'>&nbsp;</div>
-                </>) :
-                (constantsSite.site === "Evusheld") ? <>
-                <a href={linkToProvider}>
-                  <TrackVisibility partialVisibility offset={1000}>
-                      <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
-                        site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} />
-                  </TrackVisibility>
-                </a>
-                </> : 
-                <>
-                <a href={linkToProvider}>
-                  <TrackVisibility partialVisibility offset={1000}>
-                    {({ isVisible }) =>  isVisible && <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} 
-                        site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven}/>
-                    }
-                  </TrackVisibility>
-                </a>
-                </>}
-              </td>
-            </tr>
-            {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
-              <tr key={index} className={lastCityStyle}>
-                <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} available={available} site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} />
-                </td>
-              </tr>
-              :false
-            }
-            {zipFilter !== null && providerFilter !== null && constantsSite.site === "Evusheld" ?
-              <tr key={index} className={lastCityStyle}>
-                <td colSpan='3'>
-                  <br/>
-                  <h3>Add Info about Provider to Help Others</h3>
-                  <div>You can help others by adding information about this provider!</div>
-                  <ol>
-                    <li>Fill out answers to questions in the yellow area below. Don't include information you wouldn't want published.</li>
-                    <li>(Don't change the question text, as a computer will read the answers.)</li>
-                    <li>Once you fill out the info, press the "Send this info" link below, then review and send the email.</li>
-                  </ol>
-                  If step 3 fails, do these manual steps to send the data to me:
-                  
-                  <ol>
-                    <li>Create an email to: evusheld-data@relyeas.net</li>
-                    <li>Make the subject exactly the following: "{"Info about: " + toTitleCase(providerFilter)+' ('+zipFilter + ')"'}</li>
-                    <li>Copy and Paste the questions/answers from the yellow area below to the body of the message</li>
-                    <li>Send that message!</li>
-                  </ol>
-                  <div>
-                    I will publish some of this info to the Evusheld community on this site, to help others. I will not share your name or email address.</div>
-                <textarea onChange={()=>updateTextArea()} id='textArea' className='textArea' defaultValue={'Evusheld Site Url: ' + window.location + '\nProvider\'s main web page: \nProvider\'s evusheld web page: \nProvider main phone #: \nProvider phone # for Evusheld: \nProvider email for Evusheld: \nDid you get Evusheld dose here? \nProviders in network instructions: \nProvider out of network instructions: \nDid they require a prescription? \nAre you in a waiting list to get a dose here? \nInfo about different priority groups in wait list: \nInfo about who they will give Evusheld to: \nOther info that will help others: \n'}></textarea>
-                <br/>
-                <a id='mailtoLink' href="mailto:evusheld-info@relyeas.net">
-                  Send this info
-                </a>
-                </td>
-              </tr>
-              :false
-            }
-            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && constantsSite.site === "Evusheld" ?
-              <tr key={index} className={lastCityStyle}>
-                <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} shotsGiven={shotsGiven} />
-                </td>
-              </tr>
-              :false
-            }
-            </>
+      provider_x = toTitleCase(provider[0]);
+      if (providerFilter === null || provider_x.includes(providerFilter) ) {
+        // use encodeURIComponent for "#"
+        var linkToProvider = "?provider=" + encodeURIComponent(provider_x.replaceAll(' ', '-')) + "&zip=" + provider[6].substring(0,5);
+        var linkToState = "?state=" + state_code;
+        var zipCode = provider[6].substring(0,5);
+        var linkToCounty = linkToState + "&county=" + county;
+        var linkToCity = linkToState + "&city=" + city;
+        var firstRowOfCity = lastCity !== toTitleCase(city) || lastCounty !== county || lastState !== state_code;
+        if (firstRowOfCity) {
+          lastCity = toTitleCase(city); 
+          lastState = state_code;
+          lastCounty = county;
+          cityMarkup = 
+          <div className='countyCity'>
+            <a href={linkToState}>{state_code}</a><br/>
+            <a href={linkToCounty}>{toTitleCase(county)}</a><br/>
+            <a href={linkToCity}>{toTitleCase(city)}</a>
+          </div>;
+          lastCityStyle = lastCityStyle === "odd" ? "even" : "odd";
+        } else {
+          cityMarkup = null;
         }
-      }
+
+        var availableColNum = dataDate !== null ? 12 : 9;
+        var available = toNumber(provider[availableColNum]);
+
+        var npiColNum = dataDate !== null ? 15 : 11;
+        var geocodeNum = 10;
+        var geoCode = provider[geocodeNum];
+        var testToTreatData = geoCode in testToTreat ? testToTreat[geoCode] : null;
+        var npi = provider[npiColNum].trim() === "" ? "" : "NPI# " + parseInt(provider[npiColNum]);
+        availableTotal += available === "--" ? 0 : parseInt(available);
+        providerCountTotals += 1;
+
+        var reportDateColNum = dataDate !== null ? 13 : 12;
+        var testToTreatSection = null;
+        if (testToTreatData !== null) {
+          testToTreatSection = <>
+            {testToTreatData[7] !== "" || testToTreat[8] !== null ? 
+            <div>TestToTreat <a href={testToTreatData[7]}>link</a> <span>{testToTreatData[8]}</span>
+            </div> : false }
+          </>
+        }
+        return <><tr key={index} className={lastCityStyle}>
+          <td>
+            {cityMarkup}
+          </td>
+          <td className='tdProvider'>
+            <div className='mediumFont'><a href={linkToProvider}>{provider_x}</a></div>
+            <div>{toTitleCase(provider[1])}</div>
+            { testToTreatSection }
+            { zipFilter !== null && providerFilter !== null ? 
+              <>
+              <div>{toTitleCase(provider[2])}</div>
+              <div>{provider[6]}</div>
+              <div>{npi}</div>
+              </>
+              : false }
+            <div className='tinyFont'>&nbsp;</div>
+          </td>
+          <td className='tdChart'>
+            { zipFilter !== null && providerFilter !== null ? (<>
+              <div><span className='doseCount'>{available}</span> <span className='doseLabel'> avail @{toDate(provider[reportDateColNum])}</span></div>
+              <div className='tinyFont'>&nbsp;</div>
+            </>) :
+            (constantsSite.site === "Evusheld") ? <>
+            <a href={linkToProvider}>
+              <TrackVisibility partialVisibility offset={1000}>
+                  <DoseViewer zipCode={zipCode} provider={provider_x} mini='true' available={available} 
+                    site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} />
+              </TrackVisibility>
+            </a>
+            </> : 
+            <>
+            <a href={linkToProvider}>
+              <TrackVisibility partialVisibility offset={1000}>
+                {({ isVisible }) =>  isVisible && <DoseViewer zipCode={zipCode} provider={provider_x} mini='true' available={available} 
+                    site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven}/>
+                }
+              </TrackVisibility>
+            </a>
+            </>}
+          </td>
+        </tr>
+        {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
+          <tr key={index} className={lastCityStyle}>
+            <td colSpan='3'>
+              <DoseViewer zipCode={zipFilter} provider={provider_x} available={available} site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} />
+            </td>
+          </tr>
+          :false
+        }
+        {zipFilter !== null && providerFilter !== null && constantsSite.site === "Evusheld" ?
+          <tr key={index} className={lastCityStyle}>
+            <td colSpan='3'>
+              <br/>
+              <h3>Add Info about Provider to Help Others</h3>
+              <div>You can help others by adding information about this provider!</div>
+              <ol>
+                <li>Fill out answers to questions in the yellow area below. Don't include information you wouldn't want published.</li>
+                <li>(Don't change the question text, as a computer will read the answers.)</li>
+                <li>Once you fill out the info, press the "Send this info" link below, then review and send the email.</li>
+              </ol>
+              If step 3 fails, do these manual steps to send the data to me:
+              
+              <ol>
+                <li>Create an email to: evusheld-data@relyeas.net</li>
+                <li>Make the subject exactly the following: "{"Info about: " + toTitleCase(providerFilter)+' ('+zipFilter + ')"'}</li>
+                <li>Copy and Paste the questions/answers from the yellow area below to the body of the message</li>
+                <li>Send that message!</li>
+              </ol>
+              <div>
+                I will publish some of this info to the Evusheld community on this site, to help others. I will not share your name or email address.</div>
+            <textarea onChange={()=>updateTextArea()} id='textArea' className='textArea' defaultValue={'Evusheld Site Url: ' + window.location + '\nProvider\'s main web page: \nProvider\'s evusheld web page: \nProvider main phone #: \nProvider phone # for Evusheld: \nProvider email for Evusheld: \nDid you get Evusheld dose here? \nProviders in network instructions: \nProvider out of network instructions: \nDid they require a prescription? \nAre you in a waiting list to get a dose here? \nInfo about different priority groups in wait list: \nInfo about who they will give Evusheld to: \nOther info that will help others: \n'}></textarea>
+            <br/>
+            <a id='mailtoLink' href="mailto:evusheld-info@relyeas.net">
+              Send this info
+            </a>
+            </td>
+          </tr>
+          :false
+        }
+        {zipFilter !== null && providerFilter !== null && pageLocation!=="" && constantsSite.site === "Evusheld" ?
+          <tr key={index} className={lastCityStyle}>
+            <td colSpan='3'>
+              <DoseViewer zipCode={zipFilter} provider={provider_x} shotsGiven={shotsGiven} />
+            </td>
+          </tr>
+          :false
+        }
+        </>
     }
-    return null;
   });
 
-  var header = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+  var header = stateFilter !== null && state_code === stateFilter && state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr key={index}>
     <td className='infoLabels'>
       {state[2]} Health Dept:
@@ -531,7 +540,7 @@ function GetProviderDetails(state, index, providers) {
   // calculate population for state per 100k people.
   var pop100ks = state[11]/100000;
   var show100kStats = stateFilter !== null && countyFilter === null && cityFilter === null;
-  var totals = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+  var totals = (stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) && state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr key={'totals'} className='totals'>
     <td className='infoLabels'>{cityFilter !== null ? toTitleCase(cityFilter):(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td className='centered'>{providerCountTotals} providers</td>
@@ -541,12 +550,11 @@ function GetProviderDetails(state, index, providers) {
     </td>
   </tr>
   : false;
-
-  return <tbody>
-       { stateFilter !== null && state_code === stateFilter ? header : false }
-       { (stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) ? totals : false}
+  return <>
+       { header }
+       { totals }
        { providerList }
-       </tbody>
+       </>
 }
 
 function MedicineNavigator() {

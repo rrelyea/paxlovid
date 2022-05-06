@@ -153,8 +153,11 @@ class DoseViewer extends React.Component {
                 }
               }
           }
+          
+          if (this.props.shotsGiven !== null) {
+            this.props.shotsGiven.AddDoses(this.state.dosesAdministeredTotal);
+          }
 
-          this.props.shotsGiven.AddDoses(this.state.dosesAdministeredTotal);
           this.state.chartData.datasets = [{
             data: this.state.availableData,
             label: this.props.mini !== 'true' ? "Doses Reported (in stock)" : "Doses",

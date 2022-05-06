@@ -322,11 +322,10 @@ function GetNationalDetails(states, providers) {
     : false;
 }
 
-var shotsGiven = {};
-shotsGiven.AddDoses = function NoOp(count) {}
-shotsGiven.ClearDoses = function NoOp() {}
+var shotsGiven = null;
 
 if (constantsSite.site === "Evusheld") {
+  shotsGiven = {};
   shotsGiven.Doses = 0;
 
   shotsGiven.AddDoses = function AddDoses(count) {

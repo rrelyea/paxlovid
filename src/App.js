@@ -57,7 +57,7 @@ function SwapKeyword(url, keyword) {
 }
 
 function navigateTo(state, county) {
-  shotsGiven.ClearDoses(state);
+  if (shotsGiven !== null) shotsGiven.ClearDoses(state);
   const params = new URLSearchParams(window.location.search);
   if (state !== "< STATE >" && state !== "" && state !== null) { 
     params.set('state', state);

@@ -110,7 +110,7 @@ class DoseViewer extends React.Component {
           var lastAvailable;
           var dosesAdministered;
           for (var i = 0; i < this.state.doseInfo.length; i++) {
-              var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
+              var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2] : null;
               var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
               var fullReportDate = this.GetDate(this.state.doseInfo[i][0], 0, 10);
               var popDataDate = this.GetDate(this.state.doseInfo[i][7], 0, 10);
@@ -155,24 +155,27 @@ class DoseViewer extends React.Component {
           }
           
           if (this.props.shotsGiven !== null) {
-            this.props.shotsGiven.AddDoses(this.state.dosesAdministeredTotal);
+            this.props.shotsGiven.AddDoses(this.state.dosesAdministeredTotal, this.props.state);
           }
 
-          this.state.chartData.datasets = [{
-            data: this.state.availableData,
-            label: this.props.mini !== 'true' ? "Doses Reported (in stock)" : "Doses",
-            borderColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
-            backgroundColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
-            fill: false,
-          },
-          {
-            data: this.state.noReportsData,
-            label: this.props.mini !== 'true' ? "No Updates" : "No Updates",
-            borderColor: this.props.dataDate !== null ? '#616161' : '#616161',
-            pointRadius: '0',
-            backgroundColor: this.props.dataDate !== null ? '#616161' : '#616161',
-            fill: false,
-          }];
+          if (this.props.showChart !== 'false') {
+            this.state.chartData.datasets = [{
+              data: this.state.availableData,
+              label: this.props.mini !== 'true' ? "Doses Reported (in stock)" : "Doses",
+              borderColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
+              backgroundColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
+              fill: false,
+            },
+            {
+              data: this.state.noReportsData,
+              label: this.props.mini !== 'true' ? "No Updates" : "No Updates",
+              borderColor: this.props.dataDate !== null ? '#616161' : '#616161',
+              pointRadius: '0',
+              backgroundColor: this.props.dataDate !== null ? '#616161' : '#616161',
+              fill: false,
+            }];
+          }
+
           if (this.state.mounted) {
             this.setState({chartData:this.state.chartData});
           }
@@ -194,11 +197,16 @@ class DoseViewer extends React.Component {
         return (
         <>
           <div id='doses'>
-            <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
-            <div> 
-                {this.props.available} doses available as of {this.props.popUpdate}
-            </div>
-            {constantsSite.site === "Evusheld" ? 
+            { this.props.showChart !== 'false' ?
+            <>
+              <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
+              <div> 
+                  {this.props.available} doses available as of {this.props.popUpdate}
+              </div>
+            </>
+            : false }
+            
+            {constantsSite.site === "Evusheld" && this.props.showChart !== 'false' ? 
             <>
               <div>
                 Gives about {(this.state.dosesAdministeredTotal/dayDiff*7).toFixed(0)} doses a week.

@@ -187,3 +187,16 @@ a:active {
     white-Space: pre-line;
     background: lightyellow;
   }
+
+  .hiddenRow {
+    visibility: collapse;
+  }
+
+  .rightTotals {
+    text-align: right;
+  }
+
+  .tdTotals {
+    width: 1in;
+    font-size: 9pt;
+  }

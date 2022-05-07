@@ -65,7 +65,7 @@ const tableToCSV = () => {
         var cols = rows[i].querySelectorAll('td,th');
 
         // skip rows that are blank in first cell.
-        if (cols[0].innerText !== "") {
+        if (cols[0].innerText !== "" && cols[1].innerText !== "") {
           // Stores each csv row data
           var csvrow = [];
           for (var j = 0; j < cols.length; j++) {
@@ -358,7 +358,7 @@ function NationalDetails() {
 
 function ExplainDosesAdmin() {
   return <>
-    { (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) && constantsSite.site === "Evusheld" ? 
+    { (nationalTotals || stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) && constantsSite.site === "Evusheld" ? 
     <>
     <div className='tinyFont'>&nbsp;</div>
     <div className='smallerCentered'>* - doses given to patients is calculated data, not published data. We've programmed a best guess. Immunocompromised adults = approximately 2.7% of 77.9% of total population.</div>
@@ -377,8 +377,8 @@ function GetNationalDetails(states, providers) {
           { nationalTotals ? 
           <thead>
           <tr key='header'>
+            <th className='tdTotals'>State Code</th>
             <th className='tdTotals'>State</th>
-            <th></th>
             <th className='tdTotals'>Doses Given</th>
             <th className='tdTotals'>Immunocompromised adults</th>
             <th className='tdTotals'>% protected</th>
@@ -668,8 +668,8 @@ function GetStateDetails(state, index, providers) {
   var totals = (nationalTotals) || ((stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) && state.length > 1 && state[2] != null && state[2].trim() !== "state") ?
   <tr key={'totals'} className='totals'>
     { nationalTotals ? <>
-        <td>{state[3] !== "state_code" ? state[3] : ''}</td>
-        <td>{state[3] !== "state_code" ? state[2]: 'USA'}</td>
+        <td>{state[3] !== "state_code" ? state[3] : 'USA'}</td>
+        <td>{state[3] !== "state_code" ? state[2]: 'America'}</td>
         <td className='rightTotals' id={'shotsGivenHolder'+state_code}>{state[3] !== "state_code" ? shotsGivenTotal : <span id='shotsGivenUSA'></span>}</td>
         <td className='rightTotals' id={'immunocompromisedAdults'+state_code}>{state[3] !== "state_code" ? Number(immunocompromised_adults).toLocaleString("en-US") : <span id='icAdultsUSA'></span>}</td>
         <td className='rightTotals' id={'percentProtected'+state_code}>{state[3] !== "state_code" ? percentProtected + '%' : <span id='percentProtectedUSA'></span>}</td>

@@ -52,6 +52,69 @@ function toDate(str) {
   }
 }
 
+const tableToCSV = () => {
+  console.log("tableToCSV() called");
+    // Variable to store the final csv data
+    var csv_data = [];
+
+    // Get each row data
+    var rows = document.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+
+        // Get each column data
+        var cols = rows[i].querySelectorAll('td,th');
+
+        // skip rows that are blank in first cell.
+        if (cols[0].innerText !== "") {
+          // Stores each csv row data
+          var csvrow = [];
+          for (var j = 0; j < cols.length; j++) {
+
+              // Get the text data of each cell
+              // of a row and push it to csvrow
+              csvrow.push('"'+cols[j].innerText+'"');
+          }
+
+          // Combine each column value with comma
+          csv_data.push(csvrow.join(","));
+        }
+    }
+
+    // Combine each row data with new line character
+    csv_data = csv_data.join('\n');
+
+    // Call this function to download csv file 
+    downloadCSVFile(csv_data);
+}
+
+function downloadCSVFile(csv_data) {
+
+    // Create CSV file object and feed
+    // our csv_data into it
+    var CSVFile = new Blob([csv_data], {
+        type: "text/csv"
+    });
+
+    // Create to temporary link to initiate
+    // download process
+    var temp_link = document.createElement('a');
+
+    // Download csv file
+    var now = new Date();
+    temp_link.download = constantsSite.site + "-" + now.toLocaleString('en-us') +".csv";
+    var url = window.URL.createObjectURL(CSVFile);
+    temp_link.href = url;
+
+    // This link should not be displayed
+    temp_link.style.display = "none";
+    document.body.appendChild(temp_link);
+
+    // Automatically click the link to
+    // trigger download
+    temp_link.click();
+    document.body.removeChild(temp_link);
+}
+
 function SwapKeyword(url, keyword) {
   return url.replace("KEYWORD", keyword)
 }
@@ -176,6 +239,7 @@ function renderPage() {
           <HarvestInfo />
           <NeighboringCounties />
           <ExplainDosesAdmin />
+          { nationalTotals ? <input type='button' value='download table as CSV file' onClick={tableToCSV} /> : false }
           <NationalDetails />
         </div>
         <MedicineNavigator />
@@ -313,7 +377,8 @@ function GetNationalDetails(states, providers) {
           { nationalTotals ? 
           <thead>
           <tr key='header'>
-            <th className='tdTotals' colSpan='2'>State</th>
+            <th className='tdTotals'>State</th>
+            <th></th>
             <th className='tdTotals'>Doses Given</th>
             <th className='tdTotals'>Immunocompromised adults</th>
             <th className='tdTotals'>% protected</th>

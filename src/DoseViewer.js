@@ -120,22 +120,24 @@ class DoseViewer extends React.Component {
                 if (reportDate !== lastReportDate || available !== lastAvailable) {
                   var dayDiff = this.getDays(new Date(lastReportDate), new Date(reportDate));
                   dosesAdministered = lastAvailable - available;
-                  if (dosesAdministered > 0 && dosesAdministered < 24 && available !== null) {
-                    this.state.dosesAdministeredTotal += dosesAdministered;
-                    if (this.state.firstAdminDate === null) {
-                      this.state.firstAdminDate = lastFullReportDate;
-                    }
-                  }
-                  else if (dosesAdministered < 0)
-                  {
-                    if (dosesAdministered < -12) {
-                      var boxes = Math.ceil(Math.abs(dosesAdministered) / 24);
-                      var administeredToday = (boxes * 24) + dosesAdministered;
-                      this.state.dosesAdministeredTotal += administeredToday;
-                      if (administeredToday > 0 && this.state.firstAdminDate === null) {
+                  if (constantsSite.site === "Evusheld") {
+                    if (dosesAdministered > 0 && dosesAdministered < constantsSite.dosesInBox && available !== null) {
+                      this.state.dosesAdministeredTotal += dosesAdministered;
+                      if (this.state.firstAdminDate === null) {
                         this.state.firstAdminDate = lastFullReportDate;
                       }
-                    } 
+                    }
+                    else if (dosesAdministered < 0)
+                    {
+                      if (dosesAdministered < -(constantsSite.dosesInBox/2)) {
+                        var boxes = Math.ceil(Math.abs(dosesAdministered) / constantsSite.dosesInBox);
+                        var administeredToday = (boxes * constantsSite.dosesInBox) + dosesAdministered;
+                        this.state.dosesAdministeredTotal += administeredToday;
+                        if (administeredToday > 0 && this.state.firstAdminDate === null) {
+                          this.state.firstAdminDate = lastFullReportDate;
+                        }
+                      } 
+                    }
                   }
 
                   this.state.chartData.labels[j] = reportDate;

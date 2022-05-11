@@ -238,9 +238,10 @@ function renderPage() {
         <div>
           <ProviderHeader />
           <HarvestInfo />
-          <NeighboringCounties />
           <DosesPerWeek />
           <ExplainDosesAdmin />
+          <NeighboringCounties />
+
           { nationalTotals ? <input type='button' value='download table as CSV file' onClick={tableToCSV} /> : false }
           <NationalDetails />
         </div>

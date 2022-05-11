@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 import MapChart from "./MapChart";
 import allStates from "./data/allstates.json";
 import DoseViewer from './DoseViewer.js'
+import DosesGiven from './DosesGiven.js'
 import * as constantsSite from './constants-site.js';
 import * as constantsBranch from './constants-branch.js';
 import './App.css';
@@ -145,11 +146,11 @@ function navigateTo(state, county) {
 }
 
 function renderPage() {
-  if (states === null || mabSites === null || testToTreat === null) {
+  if (states === null || mabSites === null || testToTreat === null || dosesGivenPerWeek === null) {
     return;
   }
 
-  if (states !== null && dataDate !== null && testToTreat !== null && mabSites0315 === null) {
+  if (states !== null && dataDate !== null && testToTreat !== null && dosesGivenPerWeek !== null && mabSites0315 === null) {
     load0315Providers();
     return;
   }
@@ -238,6 +239,7 @@ function renderPage() {
           <ProviderHeader />
           <HarvestInfo />
           <NeighboringCounties />
+          <DosesPerWeek />
           <ExplainDosesAdmin />
           { nationalTotals ? <input type='button' value='download table as CSV file' onClick={tableToCSV} /> : false }
           <NationalDetails />
@@ -248,6 +250,16 @@ function renderPage() {
     </div>
     
   ReactDOM.render(page, document.getElementById('root'));
+}
+
+function DosesPerWeek() {
+  for (var i = 0; i < dosesGivenPerWeek.length; i++) {
+    if (stateFilter !== null && stateFilter === dosesGivenPerWeek[i][0]) {
+      console.log(dosesGivenPerWeek[i][2])
+      return <DosesGiven dosesPerWeek={dosesGivenPerWeek[i][2]} />
+    }
+  }
+  return null;
 }
 
 function NavigationHeader() {
@@ -718,6 +730,7 @@ var mabSites0315 = null;
 var mabSites = null;
 var states = null;
 var testToTreat = null;
+var dosesGivenPerWeek = null;
 
 function load0315Providers() {
   var providers0315 = baseUri + "data/therapeutics/2022-03-15-Snapshot/"+constantsSite.siteLower+"-data.csv"
@@ -740,7 +753,6 @@ function loadData() {
     }
   });
 
-
   var currentTime = new Date();
   var urlSuffix = currentTime.getMinutes() + "-" + currentTime.getSeconds();
   Papa.parse(baseUri + "data/states/state-health-info.csv?"+urlSuffix, {
@@ -760,6 +772,14 @@ function loadData() {
 
       // create string with local time/date
       dataUpdated = dataUpdatedDate.toLocaleString('en-US', {weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
+      renderPage();
+    }
+  });
+
+  Papa.parse(baseUri + "data/therapeutics/"+constantsSite.siteLower+"/doses-given-per-week.csv", {
+    download: true,
+    complete: function(results) {
+      dosesGivenPerWeek = results.data;
       renderPage();
     }
   });

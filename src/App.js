@@ -326,6 +326,7 @@ function GetNationalDetails(states, providers) {
             <div className='b'>{totals.totalType}</div>
             <div> - Providers: {Number(totals.providerCount).toLocaleString('en-US')}</div>
             <div> - Available Doses: {Number(totals.availableTotal).toLocaleString('en-US')}</div>
+            {constantsSite.siteLower!=="evusheld" ? <div> - per 100k: {Number(totals.availableTotal/totals.pop100Ks).toFixed(0).toLocaleString('en-US')}</div> : false }
             <NeighboringCounties />
             <div>&nbsp;</div>
           </td>

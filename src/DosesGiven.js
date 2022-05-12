@@ -111,7 +111,7 @@ class DosesGiven extends React.Component {
               <div>- Total: ~{this.state.stateDosesGiven !== null ? Number(this.state.stateDosesGiven).toLocaleString('en-US') : 0}</div>
 
               { constantsSite.siteLower !== "evusheld" ?
-                <div >- per 100k: {this.state.stateDosesGiven !== null ? Number(this.state.stateDosesGiven / totals.pop100Ks).toFixed(1).toLocaleString('en-US') : 0}</div> :
+                <div >- per 100k: {this.state.stateDosesGiven !== null ? Number(this.state.stateDosesGiven / totals.pop100Ks).toFixed(0).toLocaleString('en-US') : 0}</div> :
                 false }
               <div>- Weekly:</div>
               <Chart type='bar' id='chart' height='150' width='300' data={this.state.chartData} options={this.state.chartOptions} />

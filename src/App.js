@@ -241,7 +241,6 @@ function renderPage() {
           <DosesPerWeek />
           <ExplainDosesAdmin />
           <NeighboringCounties />
-
           { nationalTotals ? <input type='button' value='download table as CSV file' onClick={tableToCSV} /> : false }
           <NationalDetails />
         </div>
@@ -334,7 +333,7 @@ function ProviderHeader() {
 function HarvestInfo() {
   return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
   <div className='smallerCentered'>
-    [<a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
+    [Please <a href='https://buymeacoffee.com/rrelyea'>support site.</a> <a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
   </div>
   : false;
 }

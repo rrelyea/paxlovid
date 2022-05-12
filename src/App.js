@@ -199,15 +199,21 @@ function NavigationHeader() {
       state_code = cur.id;
     }
 
-    var chooseState = document.getElementById('chooseState');
+    if(e.ctrlKey) {
+      var querystring = state_code === null ? "" : "?state="+state_code;
+      var url = window.location.pathname + querystring;
+      window.open(url, '_blank');
+    } else {
+      var chooseState = document.getElementById('chooseState');
 
-    if (state_code !== null) {
-      chooseState.value = state_code;
-      navigateTo(state_code, null);  
-    }
-    else
-    {
-      navigateTo("< STATE >", null);
+      if (state_code !== null) {
+        chooseState.value = state_code;
+        navigateTo(state_code, null);  
+      }
+      else
+      {
+        navigateTo("< STATE >", null);
+      }
     }
   }
 

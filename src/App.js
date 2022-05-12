@@ -313,51 +313,53 @@ function GetNationalDetails(states, providers) {
     }
   }
   const Providers = providerLists;
-  return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null)
-      ? <>
-      <table className='healthDeptTable'>
-        <tbody>
-          <tr>
-          <td>
-            <div className='b'>
-                {currentState[2] + " (" + currentState[3] + ")"} Health Department Info
-            </div>
-            {currentState[5] !== "" ? <div>- <a href={"mailto:"+currentState[5]}>{currentState[5]}</a></div> : false}
-            {currentState[6] !== "" ? <div>- {currentState[6]}</div> : false}
-            {currentState[4] !== "" ? <div>- <a href={"https://twitter.com/"+currentState[4]}>{'@'+currentState[4]}</a></div> : false}
-            {currentState[0] !== "" ? <div>- <a href={"https://"+currentState[0]}>{currentState[0]}</a></div> : false}
-            {currentState[8] !== "" ? <div>- <a href={"https://"+currentState[8]}>{currentState[3]} Covid Site</a></div> : false}
-            {currentState[7] !== "" ? <div>- Search for "{constantsSite.siteLower}" term: <a href={'https://'+SwapKeyword(currentState[7], constantsSite.site)}>results</a></div> : false}
+  var healthDeptTable = currentState !== null ? <>
+        <table className='healthDeptTable'>
+          <tbody>
+            <tr>
+            <td>
+              <div className='b'>
+                  {currentState[2] + " (" + currentState[3] + ")"} Health Department Info
+              </div>
+              {currentState[5] !== "" ? <div>- <a href={"mailto:"+currentState[5]}>{currentState[5]}</a></div> : false}
+              {currentState[6] !== "" ? <div>- {currentState[6]}</div> : false}
+              {currentState[4] !== "" ? <div>- <a href={"https://twitter.com/"+currentState[4]}>{'@'+currentState[4]}</a></div> : false}
+              {currentState[0] !== "" ? <div>- <a href={"https://"+currentState[0]}>{currentState[0]}</a></div> : false}
+              {currentState[8] !== "" ? <div>- <a href={"https://"+currentState[8]}>{currentState[3]} Covid Site</a></div> : false}
+              {currentState[7] !== "" ? <div>- Search for "{constantsSite.siteLower}" term: <a href={'https://'+SwapKeyword(currentState[7], constantsSite.site)}>results</a></div> : false}
 
-            <div className='b'>{totals.totalType}</div>
-            <div> - Providers: {Number(totals.providerCount).toLocaleString('en-US')}</div>
-            <div> - Available Doses: {Number(totals.availableTotal).toLocaleString('en-US')}</div>
-            {constantsSite.siteLower!=="evusheld" && totals.show100kStats ? <div> - per 100k: {Number(totals.availableTotal/totals.pop100Ks).toFixed(0).toLocaleString('en-US')}</div> : false }
-            <NeighboringCounties />
-            <div>&nbsp;</div>
-          </td>
-          <td>
-           <DosesGiven stateCode={currentState[3]} dosesGivenPerWeek={dosesGivenPerWeek} totals={totals} />
-          </td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <div className='smallerCentered'>&nbsp;</div>
-      <table className='providerTable'>
-        <thead>
-          <tr key='header'>
-            <th>&nbsp;State - County - City&nbsp;</th>
-            <th>Provider</th>
-            <th>Doses</th>
-          </tr>
-        </thead>  
-        <tbody>
-          {Providers}
-        </tbody>
-      </table>
-    </>
-  : false;
+              <div className='b'>{totals.totalType}</div>
+              <div> - Providers: {Number(totals.providerCount).toLocaleString('en-US')}</div>
+              <div> - Available Doses: {Number(totals.availableTotal).toLocaleString('en-US')}</div>
+              {constantsSite.siteLower!=="evusheld" && totals.show100kStats ? <div> - per 100k: {Number(totals.availableTotal/totals.pop100Ks).toFixed(0).toLocaleString('en-US')}</div> : false }
+              <NeighboringCounties />
+              <div>&nbsp;</div>
+            </td>
+            <td>
+            <DosesGiven stateCode={currentState[3]} dosesGivenPerWeek={dosesGivenPerWeek} totals={totals} />
+            </td>
+            </tr>
+          </tbody>
+        </table>
+      </> : false;
+
+  return ((stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
+      <>
+        {healthDeptTable}
+        <div className='smallerCentered'>&nbsp;</div>
+        <table className='providerTable'>
+          <thead>
+            <tr key='header'>
+              <th>&nbsp;State - County - City&nbsp;</th>
+              <th>Provider</th>
+              <th>Doses</th>
+            </tr>
+          </thead>  
+          <tbody>
+            {Providers}
+          </tbody>
+        </table>
+      </> : false);
 }
 
 

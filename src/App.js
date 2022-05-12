@@ -11,7 +11,6 @@ import * as constantsBranch from './constants-branch.js';
 import './App.css';
 import TrackVisibility from 'react-on-screen';
 
-var nationalTotals = false;
 var stateFilter = null;
 var countyFilter = null;
 var adjacentCounties = null;
@@ -24,6 +23,7 @@ var pageLocation = "";
 var dataUpdated = null;
 var baseUri = "https://raw.githubusercontent.com/rrelyea/covid-therapeutics/" + constantsBranch.branch + "/";
 var dataDate = null;
+var currentState = null;
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -53,75 +53,11 @@ function toDate(str) {
   }
 }
 
-const tableToCSV = () => {
-  console.log("tableToCSV() called");
-    // Variable to store the final csv data
-    var csv_data = [];
-
-    // Get each row data
-    var rows = document.getElementsByTagName('tr');
-    for (var i = 0; i < rows.length; i++) {
-
-        // Get each column data
-        var cols = rows[i].querySelectorAll('td,th');
-
-        // skip rows that are blank in first cell.
-        if (cols[0].innerText !== "" && cols[1].innerText !== "") {
-          // Stores each csv row data
-          var csvrow = [];
-          for (var j = 0; j < cols.length; j++) {
-
-              // Get the text data of each cell
-              // of a row and push it to csvrow
-              csvrow.push('"'+cols[j].innerText+'"');
-          }
-
-          // Combine each column value with comma
-          csv_data.push(csvrow.join(","));
-        }
-    }
-
-    // Combine each row data with new line character
-    csv_data = csv_data.join('\n');
-
-    // Call this function to download csv file 
-    downloadCSVFile(csv_data);
-}
-
-function downloadCSVFile(csv_data) {
-
-    // Create CSV file object and feed
-    // our csv_data into it
-    var CSVFile = new Blob([csv_data], {
-        type: "text/csv"
-    });
-
-    // Create to temporary link to initiate
-    // download process
-    var temp_link = document.createElement('a');
-
-    // Download csv file
-    var now = new Date();
-    temp_link.download = constantsSite.site + "-" + now.toLocaleString('en-us') +".csv";
-    var url = window.URL.createObjectURL(CSVFile);
-    temp_link.href = url;
-
-    // This link should not be displayed
-    temp_link.style.display = "none";
-    document.body.appendChild(temp_link);
-
-    // Automatically click the link to
-    // trigger download
-    temp_link.click();
-    document.body.removeChild(temp_link);
-}
-
 function SwapKeyword(url, keyword) {
   return url.replace("KEYWORD", keyword)
 }
 
 function navigateTo(state, county) {
-  if (shotsGiven !== null) shotsGiven.ClearDoses(state);
   const params = new URLSearchParams(window.location.search);
   if (state !== "< STATE >" && state !== "" && state !== null) { 
     params.set('state', state);
@@ -218,8 +154,6 @@ function renderPage() {
   cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
   zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
   providerFilter = urlParams.has('provider') ? toTitleCase(urlParams.get('provider').replaceAll('-',' ')) : null;
-  var hasTotals = urlParams.has('totals');
-  nationalTotals = hasTotals && stateFilter === null && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null;
   pageLocation = window.location.hash;
 
   if (zipFilter !== null && providerFilter !== null) {
@@ -238,10 +172,6 @@ function renderPage() {
         <div>
           <ProviderHeader />
           <HarvestInfo />
-          <DosesPerWeek />
-          <ExplainDosesAdmin />
-          <NeighboringCounties />
-          { nationalTotals ? <input type='button' value='download table as CSV file' onClick={tableToCSV} /> : false }
           <NationalDetails />
         </div>
         <MedicineNavigator />
@@ -252,15 +182,6 @@ function renderPage() {
   ReactDOM.render(page, document.getElementById('root'));
 }
 
-function DosesPerWeek() {
-  for (var i = 0; i < dosesGivenPerWeek.length; i++) {
-    if (stateFilter !== null && stateFilter === dosesGivenPerWeek[i][0]) {
-      console.log(dosesGivenPerWeek[i][2])
-      return <DosesGiven dosesPerWeek={dosesGivenPerWeek[i][2]} />
-    }
-  }
-  return null;
-}
 
 function NavigationHeader() {
   const mapClick = (e) => {
@@ -333,7 +254,7 @@ function ProviderHeader() {
 function HarvestInfo() {
   return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
   <div className='smallerCentered'>
-    [Please <a href='https://buymeacoffee.com/rrelyea'>support site.</a> <a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
+    [<a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}. Say thanks, by <a href='https://buymeacoffee.com/rrelyea'>giving a coffee</a>.]
   </div>
   : false;
 }
@@ -341,8 +262,8 @@ function HarvestInfo() {
 function NeighboringCounties() {
   return stateFilter !== null && countyFilter !== null ? <>
     <div className='smallerCentered'>&nbsp;</div>
-    <div className='centered'>
-      <span>Neighboring Counties: </span>
+    <div>
+      <span>- Neighboring: </span>
       <span id='neighboringCounties'></span>
     </div>
     </> : false ;
@@ -368,106 +289,71 @@ function NationalDetails() {
   </>;
 }
 
-function ExplainDosesAdmin() {
-  return <>
-    { (nationalTotals || stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) && constantsSite.site === "Evusheld" ? 
-    <>
-    <div className='tinyFont'>&nbsp;</div>
-    <div className='smallerCentered'>* - doses given to patients is calculated data, not published data. We've programmed a best guess. Immunocompromised adults = approximately 2.7% of 77.9% of total population.</div>
-    </>
-    : false }
-  </>;
-}
 
 function GetNationalDetails(states, providers) {
-  const Providers = states.map((state,index) => {
-    return GetStateDetails(state, index, providers);
-  })
-  return (nationalTotals || stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null)
+  var providerLists = [];
+  var headerCollection = null;
+  var totalsCollection = null;
+  for (var index = 0; index < states.length; index++) {
+    var state = states[index];
+    var results = GetStateDetails(state, index, providers);
+    if (results !== false) {
+      var header = results[0];
+      var totals = results[1];
+      var providersResults = results[2];
+      if (header !== null) { currentState = state; headerCollection = header; }
+      if (totals !== null) { totalsCollection = totals; }
+      if (providersResults !== null) { providerLists.push(providersResults); }
+    }
+  }
+  const Providers = providerLists;
+  return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null)
       ? <>
-        <table className='providerTable'>
-          { nationalTotals ? 
-          <thead>
-          <tr key='header'>
-            <th className='tdTotals'>State Code</th>
-            <th className='tdTotals'>State</th>
-            <th className='tdTotals'>Doses Given</th>
-            <th className='tdTotals'>Immunocompromised adults</th>
-            <th className='tdTotals'>% protected</th>
-            <th className='tdTotals'>Doses available</th>
+      <table className='healthDeptTable'>
+        <tbody>
+          <tr>
+          <td>
+            <div className='b'>
+                {currentState[2] + " (" + currentState[3] + ")"} Health Department Info
+            </div>
+            {currentState[5] !== "" ? <div>- <a href={"mailto:"+currentState[5]}>{currentState[5]}</a></div> : false}
+            {currentState[6] !== "" ? <div>- {currentState[6]}</div> : false}
+            {currentState[4] !== "" ? <div>- <a href={"https://twitter.com/"+currentState[4]}>{'@'+currentState[4]}</a></div> : false}
+            {currentState[0] !== "" ? <div>- <a href={"https://"+currentState[0]}>{currentState[0]}</a></div> : false}
+            {currentState[8] !== "" ? <div>- <a href={"https://"+currentState[8]}>{currentState[3]} Covid Site</a></div> : false}
+            {currentState[7] !== "" ? <div>- Search for "{constantsSite.siteLower}" term: <a href={'https://'+SwapKeyword(currentState[7], constantsSite.site)}>results</a></div> : false}
+
+            <div className='b'>{totals.totalType}</div>
+            <div> - Providers: {Number(totals.providerCount).toLocaleString('en-US')}</div>
+            <div> - Available Doses: {Number(totals.availableTotal).toLocaleString('en-US')}</div>
+            <NeighboringCounties />
+            <div>&nbsp;</div>
+          </td>
+          <td>
+           <DosesGiven stateCode={currentState[3]} dosesGivenPerWeek={dosesGivenPerWeek} totals={totals} />
+          </td>
           </tr>
-        </thead>
-        :
+        </tbody>
+      </table>
+      
+      <div className='smallerCentered'>&nbsp;</div>
+      <table className='providerTable'>
         <thead>
-            <tr key='header'>
-              <th>&nbsp;State - County - City&nbsp;</th>
-              <th>Provider</th>
-              <th>Doses</th>
-            </tr>
-          </thead>  
-        }
-          
-          <tbody>
-            {Providers}
-          </tbody>
-        </table>
-      </>
-    : false;
+          <tr key='header'>
+            <th>&nbsp;State - County - City&nbsp;</th>
+            <th>Provider</th>
+            <th>Doses</th>
+          </tr>
+        </thead>  
+        <tbody>
+          {Providers}
+        </tbody>
+      </table>
+    </>
+  : false;
 }
 
-var shotsGiven = null;
 
-if (constantsSite.site === "Evusheld") {
-  shotsGiven = {};
-
-  shotsGiven.AddDoses = function AddDoses(count, state) {
-    var percentProtected = document.getElementById('percentProtected'+state);
-    var immunocompromisedAdults = document.getElementById('immunocompromisedAdults'+state);
-    var shotsGivenHolder = document.getElementById('shotsGivenHolder'+state);
-    var dosesAvailable = document.getElementById('dosesAvailable'+state);
-
-    var percentProtectedUSA = document.getElementById('percentProtectedUSA');
-    var icAdultsUSA = document.getElementById('icAdultsUSA');
-    var shotsGivenUSA = document.getElementById('shotsGivenUSA');
-    var dosesAvailableUSA = document.getElementById('dosesAvailableUSA');
-    if (shotsGivenHolder !== null) {
-      if (shotsGivenHolder.Doses === undefined) {
-        shotsGivenHolder.Doses = 0;
-        if (icAdultsUSA !== null) {
-          if (icAdultsUSA.Count === undefined) {
-            icAdultsUSA.Count = 0;
-          }
-          icAdultsUSA.Count = icAdultsUSA.Count + parseInt(immunocompromisedAdults.innerText.replaceAll(',',''));
-          icAdultsUSA.innerText = Number(icAdultsUSA.Count).toLocaleString("en-US");
-          if (percentProtectedUSA !== null ) { percentProtectedUSA.innerText = (Number(shotsGivenUSA.Doses) / icAdultsUSA.Count * 100).toFixed(1) + "%"; }
-        }
-        if (dosesAvailableUSA !== null) {
-          if (dosesAvailableUSA.Count === undefined) {
-            dosesAvailableUSA.Count = 0;
-          }
-          dosesAvailableUSA.Count = dosesAvailableUSA.Count + parseInt(dosesAvailable.innerText.replaceAll(',',''));
-          dosesAvailableUSA.innerText = Number(dosesAvailableUSA.Count).toLocaleString("en-US");
-        }
-      }
-      shotsGivenHolder.Doses = shotsGivenHolder.Doses + count;
-      shotsGivenHolder.innerText = Number(shotsGivenHolder.Doses).toLocaleString("en-US");
-      if (percentProtected !== null ) { percentProtected.innerText = (Number(shotsGivenHolder.Doses) / Number(immunocompromisedAdults.innerText.replace(',','')) * 100).toFixed(1) + "%"; }
-    }
-    if (shotsGivenUSA !== null) {
-      if (shotsGivenUSA.Doses === undefined) shotsGivenUSA.Doses = 0;
-      shotsGivenUSA.Doses = shotsGivenUSA.Doses + count;
-      shotsGivenUSA.innerText = Number(shotsGivenUSA.Doses).toLocaleString("en-US");
-    }
-  }
-
-  shotsGiven.ClearDoses = function ClearDoses(state) {
-    var shotsGivenHolder = document.getElementById('shotsGivenHolder'+state);
-    if (shotsGivenHolder !== null) {
-      shotsGivenHolder.innerText = 0;
-      shotsGivenHolder.Doses = 0;
-    }
-  }
-}
 
 const updateTextArea = () =>  {
   var mailtoLink = document.getElementById("mailtoLink");
@@ -485,8 +371,6 @@ const updateTextArea = () =>  {
 function GetStateDetails(state, index, providers) {
   if (state[3].trim() === "") return null;
 
-  var shotsGivenTotal = 0;
-  var percentProtected = 0;
   var availableTotal = 0;
   var providerCountTotals = 0;
   var firstLink = 0;
@@ -561,10 +445,6 @@ function GetStateDetails(state, index, providers) {
           </div> : false }
         </>
       }
-      if (nationalTotals) {
-        return <tr className='hiddenRow'><td><DoseViewer zipCode={zipCode} provider={provider_x} mini='true' available={available} showChart='false' state={state_code}
-        site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} /></td></tr>
-      }
       return <><tr key={index} className={lastCityStyle}>
         <td>
           {cityMarkup}
@@ -587,19 +467,11 @@ function GetStateDetails(state, index, providers) {
             <div><span className='doseCount'>{available}</span> <span className='doseLabel'> avail @{toDate(provider[reportDateColNum])}</span></div>
             <div className='tinyFont'>&nbsp;</div>
           </>) :
-          (constantsSite.site === "Evusheld") ? <>
-          <a href={linkToProvider}>
-            <TrackVisibility partialVisibility offset={1000}>
-                <DoseViewer zipCode={zipCode} provider={provider_x} mini='true' available={available} 
-                    site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} state={state_code} />
-            </TrackVisibility>
-          </a>
-          </> : 
           <>
           <a href={linkToProvider}>
             <TrackVisibility partialVisibility offset={1000}>
               {({ isVisible }) =>  isVisible && <DoseViewer zipCode={zipCode} provider={provider_x} mini='true' available={available} state={state_code}
-                  site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven}/>
+                  site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} />
               }
             </TrackVisibility>
           </a>
@@ -609,7 +481,7 @@ function GetStateDetails(state, index, providers) {
       {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
         <tr key={index} className={lastCityStyle}>
           <td colSpan='3'>
-            <DoseViewer zipCode={zipFilter} provider={provider_x} available={available} site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} shotsGiven={shotsGiven} />
+            <DoseViewer zipCode={zipFilter} provider={provider_x} available={available} site={constantsSite.siteLower} dataDate={dataDate} popUpdate={provider[reportDateColNum].substring(5,10)} />
           </td>
         </tr>
         :false
@@ -647,7 +519,7 @@ function GetStateDetails(state, index, providers) {
       {zipFilter !== null && providerFilter !== null && pageLocation!=="" && constantsSite.site === "Evusheld" ?
         <tr key={index} className={lastCityStyle}>
           <td colSpan='3'>
-            <DoseViewer zipCode={zipFilter} provider={provider_x} shotsGiven={shotsGiven} />
+            <DoseViewer zipCode={zipFilter} provider={provider_x} />
           </td>
         </tr>
         :false
@@ -670,40 +542,21 @@ function GetStateDetails(state, index, providers) {
       <span>{state[4] !== "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
     </td>
   </tr>
-  : false;
+  : null;
 
-  // calculate population for state per 100k people.
-  var pop100ks = state[11]/100000;
-
-  var immunocompromised_adults = (state[11]*.027*.779).toFixed(0);
-  var show100kStats = nationalTotals || (stateFilter !== null && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null);
-  var totals = (nationalTotals) || ((stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) && state.length > 1 && state[2] != null && state[2].trim() !== "state") ?
-  <tr key={'totals'} className='totals'>
-    { nationalTotals ? <>
-        <td>{state[3] !== "state_code" ? state[3] : 'USA'}</td>
-        <td>{state[3] !== "state_code" ? state[2]: 'America'}</td>
-        <td className='rightTotals' id={'shotsGivenHolder'+state_code}>{state[3] !== "state_code" ? shotsGivenTotal : <span id='shotsGivenUSA'></span>}</td>
-        <td className='rightTotals' id={'immunocompromisedAdults'+state_code}>{state[3] !== "state_code" ? Number(immunocompromised_adults).toLocaleString("en-US") : <span id='icAdultsUSA'></span>}</td>
-        <td className='rightTotals' id={'percentProtected'+state_code}>{state[3] !== "state_code" ? percentProtected + '%' : <span id='percentProtectedUSA'></span>}</td>
-        <td className='rightTotals' id={'dosesAvailable'+state_code}>{state[3] !== "state_code" ? Number(availableTotal).toLocaleString("en-US") : <span id='dosesAvailableUSA'></span>}</td>
-      </> : 
-    <>
-      <td className='infoLabels'>{cityFilter !== null ? toTitleCase(cityFilter):(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
-      <td className='centered'>{providerCountTotals} providers</td>
-      <td className='doseCount'>
-        {'Available: ' + Number(availableTotal).toLocaleString('en-US') + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}
-        {constantsSite.site === "Evusheld" ? <><br/>Doses Given: <span id={'shotsGivenHolder'+state_code}>0</span>*</> : false }
-        {constantsSite.site === "Evusheld" && (stateFilter !== null && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null) ? <><br/>IC Adults: <span id={'immunocompromisedAdults'+state_code}>{Number(immunocompromised_adults).toLocaleString("en-US")}</span>*</> : false }
-        {constantsSite.site === "Evusheld" && (stateFilter !== null && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null)? <><br/>% Protected: <span id={'percentProtected'+state_code}>0</span></> : false }
-      </td>
-    </> }
-  </tr>
-  : false;
-  return <>
-       { header }
-       { totals }
-       { providerList }
-       </>
+  var totals = null;
+  if ((stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) && state.length > 1 && state[2] != null && state[2].trim() !== "state") {
+    totals = {
+      "totalType" : cityFilter !== null ? toTitleCase(cityFilter): (countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? state[3] + " State":""))),
+      "providerCount" : providerCountTotals,
+      "availableTotal" : availableTotal,
+      "icAdults" : (state[11]*.027*.779).toFixed(0),
+      "pop" : state[11],
+      "pop100Ks" : state[11] / 100000,
+      "show100kStats" : stateFilter !== null && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
+    }
+  }
+  return [header, totals, providerList];
 }
 
 function MedicineNavigator() {

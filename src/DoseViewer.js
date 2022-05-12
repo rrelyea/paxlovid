@@ -156,10 +156,6 @@ class DoseViewer extends React.Component {
               }
           }
           
-          if (this.props.shotsGiven !== null) {
-            this.props.shotsGiven.AddDoses(this.state.dosesAdministeredTotal, this.props.state);
-          }
-
           if (this.props.showChart !== 'false') {
             this.state.chartData.datasets = [{
               data: this.state.availableData,
@@ -199,16 +195,12 @@ class DoseViewer extends React.Component {
         return (
         <>
           <div id='doses'>
-            { this.props.showChart !== 'false' ?
-            <>
-              <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
-              <div> 
-                  {this.props.available} doses available as of {this.props.popUpdate}
-              </div>
-            </>
-            : false }
+            <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
+            <div> 
+                {this.props.available} doses available as of {this.props.popUpdate}
+            </div>
             
-            {constantsSite.site === "Evusheld" && this.props.showChart !== 'false' ? 
+            {constantsSite.site === "Evusheld" ? 
             <>
               <div>
                 Gives about {(this.state.dosesAdministeredTotal/dayDiff*7).toFixed(0)} doses a week.

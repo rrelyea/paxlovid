@@ -62,141 +62,155 @@ a:active {
   text-decoration: underline;
 }
 
-  .countyCity {
-    font-Size: 14pt
-  }
+.countyCity {
+  font-Size: 14pt
+}
 
-  .providerTable {
-    margin-Left: 10px;
-    margin-Top: 30px;
-    margin-Bottom: 30px;
-    margin: 0 auto;
-    border-Collapse: collapse;
-  }
+.b {
+  font-weight: bold;
+  margin-Top: 10px;
+}
 
-  .doseCount {
-    font-Size: 12pt;
-    vertical-Align: bottom;
-  }
+.providerTable {
+  margin-Left: 10px;
+  margin-Top: 30px;
+  margin-Bottom: 30px;
+  margin: 0 auto;
+  border-Collapse: collapse;
+}
 
-  .doseLabel {
-    vertical-Align: top;
-  }
+.healthDeptTable {
+  margin-Left: 10px;
+  margin-Top: 30px;
+  margin-Bottom: 30px;
+  margin: 0 auto;
+  border-Collapse: collapse;
+  width: 450px
+}
 
-  .mediumFont {
-    font-Size: 14pt;
-  }
+.doseCount {
+  font-Size: 12pt;
+  vertical-Align: bottom;
+}
 
-  .smallerCentered {
-    font-Size: 10pt;
-    text-Align: center;
-  }
+.doseLabel {
+  vertical-Align: top;
+}
 
-  .smallerFont {
-    font-Size: 10pt;
-  }
+.mediumFont {
+  font-Size: 14pt;
+}
 
-  .eightPointFont {
-    font-Size: 8pt;
-  }
+.smallerCentered {
+  font-Size: 10pt;
+  text-Align: center;
+}
 
-  .tinyFont {
-    font-Size: '5pt'
-  }
+.smallerFont {
+  font-Size: 10pt;
+}
 
-  .chooseState {
-    font-Size: 18pt;
-  }
+.eightPointFont {
+  font-Size: 8pt;
+}
 
-  .mapDiv {
-    margin: 0 auto;
-    height: 250px;
-    width: 350px;
-  }
+.tinyFont {
+  font-Size: '5pt'
+}
 
-  .centered {
-    text-Align: center;
-  }
+.chooseState {
+  font-Size: 18pt;
+}
 
-  .centeredOrange {
-    text-Align: center;
-    background: orange;
-  }
+.mapDiv {
+  margin: 0 auto;
+  height: 250px;
+  width: 350px;
+}
 
-  .centeredYellow {
-    text-Align: center;
-    background: yellow;
-  }
+.centered {
+  text-Align: center;
+}
 
-  td {
-    max-Width: 100px;
-    vertical-Align: top;
-    word-Wrap: break-word;
-  }
+.centeredOrange {
+  text-Align: center;
+  background: orange;
+}
 
-  .tdChart {
-    max-Width: 250px;
-    vertical-Align: top;
-    word-Wrap: break-word;
-  }
+.centeredYellow {
+  text-Align: center;
+  background: yellow;
+}
 
-  .tdProvider {
-    max-Width: 200px;
-    overflow: hidden;
-    text-Overflow: ellipsis;
-    vertical-Align: top;
-  }
+td {
+  max-Width: 100px;
+  vertical-Align: top;
+  word-Wrap: break-word;
+}
 
-  /* table color theme started with primary color of #f1ec90 and used https://material.io/design/color/the-color-system.html#tools-for-picking-colors */
+.tdChart {
+  max-Width: 250px;
+  vertical-Align: top;
+  word-Wrap: break-word;
+}
 
-  th {
-    position: sticky;
-    background-Color: #9095f1;
-    top: 0px;
-    z-Index: 2;
-    font-Size: 20px;
-  }
+.tdProvider {
+  max-Width: 200px;
+  overflow: hidden;
+  text-Overflow: ellipsis;
+  vertical-Align: top;
+}
 
-  .odd {
-    background: white;
-  }
+/* table color theme started with primary color of #f1ec90 and used https://material.io/design/color/the-color-system.html#tools-for-picking-colors */
 
-  .even {
-    background: #f1ec90;
-  }
+th {
+  position: sticky;
+  background-Color: #9095f1;
+  top: 0px;
+  z-Index: 2;
+  font-Size: 20px;
+}
 
-  .stateInfo {
-    background-Color: #f1bb90;
-    text-Align: left;
-  }
+.odd {
+  background: white;
+}
 
-  .infoLabels {
-    background-Color: #f1bb90;
-    text-Align: right;
-    padding-Right: 10px;
-  }
+.even {
+  background: #f1ec90;
+}
 
-  .totals {
-    padding: 0 0;
-    background-Color: #f1bb90;
-  }
+.stateInfo {
+  background-Color: #f1bb90;
+  text-Align: left;
+}
 
-  .textArea {
-    height: 300px;
-    width: 600px;
-    white-Space: pre-line;
-    background: lightyellow;
-  }
+.infoLabels {
+  background-Color: #f1bb90;
+  text-Align: right;
+  padding-Right: 10px;
+}
 
-  .hiddenRow {
-    visibility: collapse;
-  }
+.totals {
+  padding: 0 0;
+  background-Color: #f1bb90;
+}
 
-  .rightTotals {
-    text-align: right;
-  }
+.textArea {
+  height: 300px;
+  width: 600px;
+  white-Space: pre-line;
+  background: lightyellow;
+}
 
-  .tdTotals {
-    width: 1in;
-    font-size: 9pt;
-  }
+.hiddenRow {
+  visibility: collapse;
+}
+
+.rightTotals {
+  text-align: right;
+}
+
+.tdTotals {
+  width: 1in;
+  font-size: 9pt;
+}

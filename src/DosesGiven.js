@@ -80,10 +80,10 @@ class DosesGiven extends React.Component {
             }
         }
 
+        this.state.chartData.labels = [];
+        this.state.dosesGiven = [];
         if (dosesPerWeek !== null) {
           var weeks = dosesPerWeek.split(',');
-          this.state.chartData.labels = [];
-          this.state.dosesGiven = [];
           for (var j = 0; j < weeks.length; j++) {
             var chunks = weeks[j].split(':');
             if (chunks[0] !== "55") { // why is week 55 being generated in 5/2022?

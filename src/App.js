@@ -339,14 +339,14 @@ function GetNationalDetails(states, providers) {
               <div>&nbsp;</div>
             </td>
             <td>
-            <DosesGiven stateCode={currentState[3]} dosesGivenPerWeek={dosesGivenPerWeek} totals={totals} />
+              <DosesGiven stateCode={currentState[3]} dosesGivenPerWeek={dosesGivenPerWeek} totals={totals} />
             </td>
             </tr>
           </tbody>
         </table>
       </> : false;
 
-  if (totals.providerCount === 0) {
+  if (totals !== null && totals.providerCount === 0) {
     Providers = [<tr><td colSpan='3'>No Providers Found in this Location</td></tr>];
   }
 

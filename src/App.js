@@ -310,10 +310,12 @@ function GetNationalDetails(states, providers) {
       var providersResults = results[2];
       if (header !== null) { currentState = state; headerCollection = header; }
       if (totals !== null) { totalsCollection = totals; }
-      if (providersResults !== null) { providerLists.push(providersResults); }
+      if (providersResults !== null) { 
+        providerLists.push(providersResults); 
+      }
     }
   }
-  const Providers = providerLists;
+  var Providers = providerLists;
   var healthDeptTable = currentState !== null ? <>
         <table className='healthDeptTable'>
           <tbody>
@@ -343,6 +345,10 @@ function GetNationalDetails(states, providers) {
           </tbody>
         </table>
       </> : false;
+
+  if (totals.providerCount === 0) {
+    Providers = [<tr><td colSpan='3'>No Providers Found in this Location</td></tr>];
+  }
 
   return ((stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
       <>

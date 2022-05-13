@@ -80,15 +80,17 @@ class DosesGiven extends React.Component {
             }
         }
 
-        var weeks = dosesPerWeek.split(',');
-        this.state.chartData.labels = [];
-        this.state.dosesGiven = [];
-        for (var j = 0; j < weeks.length; j++) {
-          var chunks = weeks[j].split(':');
-          if (chunks[0] !== "55") { // why is week 55 being generated in 5/2022?
-            var eow = this.getSundayFromWeekNum(Number(chunks[0])-1,2022);
-            this.state.chartData.labels[j] = eow.getMonth()+1 + "-" + eow.getDate();
-            this.state.dosesGiven[j] = chunks[1];
+        if (dosesPerWeek !== null) {
+          var weeks = dosesPerWeek.split(',');
+          this.state.chartData.labels = [];
+          this.state.dosesGiven = [];
+          for (var j = 0; j < weeks.length; j++) {
+            var chunks = weeks[j].split(':');
+            if (chunks[0] !== "55") { // why is week 55 being generated in 5/2022?
+              var eow = this.getSundayFromWeekNum(Number(chunks[0])-1,2022);
+              this.state.chartData.labels[j] = eow.getMonth()+1 + "-" + eow.getDate();
+              this.state.dosesGiven[j] = chunks[1];
+            }
           }
         }
         this.state.chartData.datasets = [{
@@ -97,7 +99,6 @@ class DosesGiven extends React.Component {
           backgroundColor: this.props.dataDate !== null ? '#ffa500' : '#00DD00',
           fill: false,
         }];
-
       }
     }
 

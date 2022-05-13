@@ -217,6 +217,10 @@ function NavigationHeader() {
     }
   }
 
+  const handleDrugChange = (e) => {
+    document.location = 'https://rrelyea.github.io/'+ e.target.value.toLowerCase() + window.location.search;
+  }
+
   const handleStateChange = (e) => {
     navigateTo(e.target.value, null);
   }
@@ -229,7 +233,13 @@ function NavigationHeader() {
   return zipFilter === null || providerFilter === null ?
     <>
       <div className='centered'>
-        <label className='chooseState' htmlFor='chooseState'>{constantsSite.site} providers in:
+        <label className='chooseState' htmlFor='chooseState'>
+          <select className='mediumFont' defaultValue={constantsSite.site} onChange={(e) => handleDrugChange(e)}> 
+            <option>Evusheld</option>
+            <option>Paxlovid</option>
+            <option>Bebtelovimab</option>
+            <option>Lagevrio</option>
+          </select> providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 
             index > 0 ? <option key={index} value={state[3].trim()}>{state[2].trim() + " (" + state[3].trim() + ")"}</option> : false

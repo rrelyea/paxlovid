@@ -218,7 +218,7 @@ function NavigationHeader() {
   }
 
   const handleDrugChange = (e) => {
-    document.location = 'https://rrelyea.github.io/'+ e.target.value.toLowerCase() + window.location.search;
+    document.location = 'https://rrelyea.github.io/'+ e.target.value + window.location.search;
   }
 
   const handleStateChange = (e) => {
@@ -234,11 +234,11 @@ function NavigationHeader() {
     <>
       <div className='centered'>
         <label className='chooseState' htmlFor='chooseState'>
-          <select className='mediumFont' defaultValue={constantsSite.site} onChange={(e) => handleDrugChange(e)}> 
-            <option>Evusheld</option>
-            <option>Paxlovid</option>
-            <option>Bebtelovimab</option>
-            <option>Lagevrio</option>
+          <select className='mediumFont' defaultValue={constantsSite.siteLower} onChange={(e) => handleDrugChange(e)}> 
+            <option value='evusheld'>Evusheld</option>
+            <option value='paxlovid'>Paxlovid</option>
+            <option value='bebtelovimab'>Bebtelovimab</option>
+            <option value='lagevrio'>Lagevrio</option>
           </select> providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 

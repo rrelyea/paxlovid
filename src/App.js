@@ -300,6 +300,7 @@ function GetNationalDetails(states, providers) {
   var providerLists = [];
   var headerCollection = null;
   var totalsCollection = null;
+  currentState = null;
   for (var index = 0; index < states.length; index++) {
     var state = states[index];
     var results = GetStateDetails(state, index, providers);

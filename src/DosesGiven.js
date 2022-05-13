@@ -108,7 +108,7 @@ class DosesGiven extends React.Component {
         return (
         <>
           <div id='doses'>
-              <div className='b'>{this.props.stateCode} Doses Given to Patients</div>
+              <div className='b'>Patient Doses Given ({this.props.stateCode})</div>
               <div>- Total: ~{this.state.stateDosesGiven !== null ? Number(this.state.stateDosesGiven).toLocaleString('en-US') : 0}</div>
 
               { constantsSite.siteLower !== "evusheld" ?

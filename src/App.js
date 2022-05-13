@@ -11,7 +11,7 @@ import * as constantsBranch from './constants-branch.js';
 import './App.css';
 import TrackVisibility from 'react-on-screen';
 
-var stateFilter = null;
+var stateFilter = "USA";
 var countyFilter = null;
 var adjacentCounties = null;
 var countiesPerState = null;
@@ -59,7 +59,7 @@ function SwapKeyword(url, keyword) {
 
 function navigateTo(state, county) {
   const params = new URLSearchParams(window.location.search);
-  if (state !== "< STATE >" && state !== "" && state !== null) { 
+  if (state !== "USA" && state !== "" && state !== null) { 
     params.set('state', state);
     countiesPerState = null;
   } else if (params.has('state')) {
@@ -93,7 +93,7 @@ function renderPage() {
 
   var urlParams = new URLSearchParams(window.location.search);
 
-  stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : null;
+  stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : "USA";
   countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
   if (stateFilter != null && countyFilter !== null) {
     adjacentCounties = null;
@@ -212,7 +212,7 @@ function NavigationHeader() {
       }
       else
       {
-        navigateTo("< STATE >", null);
+        navigateTo("USA", null);
       }
     }
   }
@@ -232,9 +232,9 @@ function NavigationHeader() {
         <label className='chooseState' htmlFor='chooseState'>{constantsSite.site} providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 
-            <option key={index} value={index > 0 ? state[3].trim(): "< STATE >"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "< state >"}</option>
+            index > 0 ? <option key={index} value={state[3].trim()}>{state[2].trim() + " (" + state[3].trim() + ")"}</option> : false
           ) : false } 
-        </select> { stateFilter !== null ? <> <select className='mediumFont' id='chooseCounty' onChange={(e) => handleCountyChange(e)}>
+        </select> { stateFilter !== "USA" ? <> <select className='mediumFont' id='chooseCounty' onChange={(e) => handleCountyChange(e)}>
           </select> { countyFilter !== null ? <a href={linkToState}>(clear)</a> : false }
         </> : false
         }
@@ -260,7 +260,7 @@ function ProviderHeader() {
 function HarvestInfo() {
   return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
   <div className='smallerCentered'>
-    [<a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}. Say thanks, by <a href='https://buymeacoffee.com/rrelyea'>giving a coffee</a>.]
+    [<a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}. Support site: <a href='https://buymeacoffee.com/rrelyea'>donate a coffee</a>.]
   </div>
   : false;
 }
@@ -362,13 +362,14 @@ function GetNationalDetails(states, providers) {
         {healthDeptTable}
         <div className='smallerCentered'>&nbsp;</div>
         <table className='providerTable'>
+          { currentState[3] !== "USA" ?
           <thead>
             <tr key='header'>
               <th>&nbsp;State - County - City&nbsp;</th>
               <th>Provider</th>
               <th>Doses</th>
             </tr>
-          </thead>  
+          </thead> : false }
           <tbody>
             {Providers}
           </tbody>

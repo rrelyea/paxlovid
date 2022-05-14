@@ -93,7 +93,7 @@ function renderPage() {
 
   var urlParams = new URLSearchParams(window.location.search);
 
-  stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : "USA";
+  stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : null;
   countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
   if (stateFilter != "USA" && countyFilter !== null) {
     adjacentCounties = null;
@@ -154,6 +154,9 @@ function renderPage() {
   cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
   zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
   providerFilter = urlParams.has('provider') ? toTitleCase(urlParams.get('provider').replaceAll('-',' ')) : null;
+  if (zipFilter == null && providerFilter == null && cityFilter == null && countyFilter == null && stateFilter == null) {
+    stateFilter = "USA";
+  }
   pageLocation = window.location.hash;
 
   if (zipFilter !== null && providerFilter !== null) {
@@ -181,7 +184,6 @@ function renderPage() {
     
   ReactDOM.render(page, document.getElementById('root'));
 }
-
 
 function NavigationHeader() {
   const mapClick = (e) => {
@@ -240,7 +242,7 @@ function NavigationHeader() {
             <option value='bebtelovimab'>Bebtelovimab</option>
             <option value='lagevrio'>Lagevrio</option>
           </select> providers in:
-        </label> <select className='mediumFont' id='chooseState' value={stateFilter != "USA" ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
+        </label> <select className='mediumFont' id='chooseState' value={stateFilter != null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 
             index > 0 ? <option key={index} value={state[3].trim()}>{state[2].trim() + " (" + state[3].trim() + ")"}</option> : false
           ) : false } 
@@ -314,17 +316,18 @@ function GetNationalDetails(states, providers) {
   for (var index = 0; index < states.length; index++) {
     var state = states[index];
     var results = GetStateDetails(state, index, providers);
-    if (results !== false) {
+    if (results) {
       var header = results[0];
       var totals = results[1];
       var providersResults = results[2];
       if (header !== null) { currentState = state; headerCollection = header; }
       if (totals !== null) { totalsCollection = totals; }
       if (providersResults !== null) { 
-        providerLists.push(providersResults); 
+        providerLists.push(providersResults);
       }
     }
   }
+
   var Providers = providerLists;
   var healthDeptTable = currentState !== null ? <>
         <table className='healthDeptTable'>
@@ -343,10 +346,10 @@ function GetNationalDetails(states, providers) {
 
               { currentState[3] !== "USA" ?
               <>
-                <div className='b'>{totals.totalType}</div>
-                <div> - Providers: {Number(totals.providerCount).toLocaleString('en-US')}</div>
-                <div> - Available Doses: {Number(totals.availableTotal).toLocaleString('en-US')}</div>
-                {constantsSite.siteLower!=="evusheld" && totals.show100kStats ? <div className='lm10'> - per 100k: {Number(totals.availableTotal/totals.pop100Ks).toFixed(0).toLocaleString('en-US')}</div> : false }
+                <div className='b'>{totalsCollection.totalType}</div>
+                <div> - Providers: {Number(totalsCollection.providerCount).toLocaleString('en-US')}</div>
+                <div> - Available Doses: {Number(totalsCollection.availableTotal).toLocaleString('en-US')}</div>
+                {constantsSite.siteLower!=="evusheld" && totalsCollection.show100kStats ? <div className='lm10'> - per 100k: {Number(totalsCollection.availableTotal/totalsCollection.pop100Ks).toFixed(0).toLocaleString('en-US')}</div> : false }
                 <NeighboringCounties />
                 <div>&nbsp;</div>
               </> : false }
@@ -358,21 +361,20 @@ function GetNationalDetails(states, providers) {
           </tbody>
         </table>
       </> : false;
-
   if (totals !== null && totals.providerCount === 0) {
-    if (currentState[3] === "USA") {
+    if (currentState != null && currentState[3] === "USA") {
       Providers = [<tr><td colSpan='3'>Choose a State to see Providers</td></tr>];
     } else {
       Providers = [<tr><td colSpan='3'>No Providers Found in this Location</td></tr>];
     }
   }
 
-  return ((stateFilter != "USA" || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
+  return (healthDeptTable != null || Providers != null ?
       <>
         {healthDeptTable}
         <div className='smallerCentered'>&nbsp;</div>
         <table className='providerTable'>
-          { currentState !== null && currentState[3] !== "USA" ?
+          { currentState == null || (currentState !== null && currentState[3] !== "USA") ?
           <thead>
             <tr key='header'>
               <th>&nbsp;State - County - City&nbsp;</th>
@@ -416,15 +418,15 @@ function GetStateDetails(state, index, providers) {
   var lastState = "";
   var lastCityStyle = null;
   var cityMarkup = null;
-  if (stateFilter != "USA" && stateFilter !== state_code) return false;
+
+  if (stateFilter !== null && stateFilter !== state_code) return false;
 
   var providerList = providers.filter((provider) => provider[5] === state_code && 
-  ((stateFilter === "USA" || stateFilter === state_code) 
+  ((stateFilter === null || stateFilter === state_code) 
   && (zipFilter === null || zipFilter === provider[6].substring(0,5))
   && (countyFilter === null || countyFilter === provider[4].toUpperCase())
   && (cityFilter === null || cityFilter === provider[3].toUpperCase()))
         ).map((provider, index) => {
-
     // ignore blank lines in provider file
     if (provider.length === 1) 
     {
@@ -562,7 +564,7 @@ function GetStateDetails(state, index, providers) {
     }
   });
 
-  var header = stateFilter != "USA" && state_code === stateFilter && state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+  var header = state_code === stateFilter && state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr key={index}>
     <td className='infoLabels'>
       {state[2]} Health Dept:
@@ -578,9 +580,7 @@ function GetStateDetails(state, index, providers) {
   </tr>
   : null;
 
-  var totals = null;
-  if ((stateFilter != "USA" && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter != "USA") && state.length > 1 && state[2] != null && state[2].trim() !== "state") {
-    totals = {
+  var totals = {
       "totalType" : cityFilter !== null ? toTitleCase(cityFilter): (countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != "USA" ? state[3] + " State":""))),
       "providerCount" : providerCountTotals,
       "availableTotal" : availableTotal,
@@ -588,9 +588,12 @@ function GetStateDetails(state, index, providers) {
       "pop" : state[11],
       "pop100Ks" : state[11] / 100000,
       "show100kStats" : stateFilter != "USA" && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
-    }
   }
-  return [header, totals, providerList];
+  if (header !== null || (totals != null && totals.providerCount != 0) || providerList.length != 0) {
+    return [header, totals, providerList];
+  } else {
+    return false;
+  }
 }
 
 function MedicineNavigator() {

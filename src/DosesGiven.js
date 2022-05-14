@@ -105,6 +105,7 @@ class DosesGiven extends React.Component {
     render() {
         this.getData();
         var totals = this.props.totals;
+        console.log('totals',totals);
         return (
         <>
           <div id='doses'>

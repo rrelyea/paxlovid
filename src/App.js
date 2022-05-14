@@ -11,7 +11,7 @@ import * as constantsBranch from './constants-branch.js';
 import './App.css';
 import TrackVisibility from 'react-on-screen';
 
-var stateFilter = "USA";
+var stateFilter = null;
 var countyFilter = null;
 var adjacentCounties = null;
 var countiesPerState = null;
@@ -95,7 +95,7 @@ function renderPage() {
 
   stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : "USA";
   countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
-  if (stateFilter != null && countyFilter !== null) {
+  if (stateFilter != "USA" && countyFilter !== null) {
     adjacentCounties = null;
     Papa.parse(baseUri + "data/counties/adjacency/"+stateFilter+"/"+countyFilter.toLowerCase()+".csv", {
       download: true,
@@ -126,7 +126,7 @@ function renderPage() {
     });
   }
 
-  if (stateFilter !== null && countiesPerState === null) {
+  if (stateFilter != "USA" && countiesPerState === null) {
     Papa.parse(baseUri + "data/counties/per-state/"+stateFilter+".csv", {
       download: true,
       complete: function(download) {
@@ -159,9 +159,9 @@ function renderPage() {
   if (zipFilter !== null && providerFilter !== null) {
     document.title = constantsSite.site + " '" + toTitleCase(providerFilter) + "'";
   } else {
-    if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
-    else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
-    else if (stateFilter !== null) document.title = stateFilter + " " + constantsSite.site + " Providers in " + stateFilter;
+    if (stateFilter !== "USA" && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
+    else if (stateFilter !== "USA" && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
+    else if (stateFilter !== "USA") document.title = stateFilter + " " + constantsSite.site + " Providers in " + stateFilter;
     else if (providerFilter !== null) document.title = constantsSite.site + " '" + toTitleCase(providerFilter) + "'"
     else document.title = constantsSite.site + " Providers in USA";
   }
@@ -229,7 +229,7 @@ function NavigationHeader() {
     navigateTo(stateFilter, e.target.value);
   }
 
-  var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
+  var linkToState = stateFilter != "USA" ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
   return zipFilter === null || providerFilter === null ?
     <>
       <div className='centered'>
@@ -240,7 +240,7 @@ function NavigationHeader() {
             <option value='bebtelovimab'>Bebtelovimab</option>
             <option value='lagevrio'>Lagevrio</option>
           </select> providers in:
-        </label> <select className='mediumFont' id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
+        </label> <select className='mediumFont' id='chooseState' value={stateFilter != "USA" ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 
             index > 0 ? <option key={index} value={state[3].trim()}>{state[2].trim() + " (" + state[3].trim() + ")"}</option> : false
           ) : false } 
@@ -268,7 +268,7 @@ function ProviderHeader() {
 }
 
 function HarvestInfo() {
-  return (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
+  return (stateFilter != "USA" || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
   <div className='smallerCentered'>
     [<a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}. Support site: <a href='https://buymeacoffee.com/rrelyea'>donate a coffee</a>.]
   </div>
@@ -276,7 +276,7 @@ function HarvestInfo() {
 }
 
 function NeighboringCounties() {
-  return stateFilter !== null && countyFilter !== null ? <>
+  return stateFilter != "USA" && countyFilter !== null ? <>
     <div className='smallerCentered'>&nbsp;</div>
     <div>
       <span>- Neighboring: </span>
@@ -291,7 +291,7 @@ function Warning() {
     dataDate = check.checked ? "03-15" : null;
     renderPage();
   }
-  return zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== null || providerFilter !== null ?
+  return zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter != "USA" || providerFilter !== null ?
         <div className={ dataDate !== null ? "centeredOrange" : "centeredYellow" }>
           <div className='tinyFont'>&nbsp;</div>
           <div>WARNING: On March 16th, HHS.gov removed many providers &amp; all allotted counts. <label >Peek back at the 3/15 data: <input type='checkbox' id='showOldData' onClick={oldProvidersClick} defaultChecked={dataDate === "03-15"} /></label></div>
@@ -367,12 +367,12 @@ function GetNationalDetails(states, providers) {
     }
   }
 
-  return ((stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
+  return ((stateFilter != "USA" || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
       <>
         {healthDeptTable}
         <div className='smallerCentered'>&nbsp;</div>
         <table className='providerTable'>
-          { currentState[3] !== "USA" ?
+          { currentState !== null && currentState[3] !== "USA" ?
           <thead>
             <tr key='header'>
               <th>&nbsp;State - County - City&nbsp;</th>
@@ -416,10 +416,10 @@ function GetStateDetails(state, index, providers) {
   var lastState = "";
   var lastCityStyle = null;
   var cityMarkup = null;
-  if (stateFilter !== null && stateFilter !== state_code) return false;
+  if (stateFilter != "USA" && stateFilter !== state_code) return false;
 
   var providerList = providers.filter((provider) => provider[5] === state_code && 
-  ((stateFilter === null || stateFilter === state_code) 
+  ((stateFilter === "USA" || stateFilter === state_code) 
   && (zipFilter === null || zipFilter === provider[6].substring(0,5))
   && (countyFilter === null || countyFilter === provider[4].toUpperCase())
   && (cityFilter === null || cityFilter === provider[3].toUpperCase()))
@@ -562,7 +562,7 @@ function GetStateDetails(state, index, providers) {
     }
   });
 
-  var header = stateFilter !== null && state_code === stateFilter && state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+  var header = stateFilter != "USA" && state_code === stateFilter && state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr key={index}>
     <td className='infoLabels'>
       {state[2]} Health Dept:
@@ -579,15 +579,15 @@ function GetStateDetails(state, index, providers) {
   : null;
 
   var totals = null;
-  if ((stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) && state.length > 1 && state[2] != null && state[2].trim() !== "state") {
+  if ((stateFilter != "USA" && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter != "USA") && state.length > 1 && state[2] != null && state[2].trim() !== "state") {
     totals = {
-      "totalType" : cityFilter !== null ? toTitleCase(cityFilter): (countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? state[3] + " State":""))),
+      "totalType" : cityFilter !== null ? toTitleCase(cityFilter): (countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != "USA" ? state[3] + " State":""))),
       "providerCount" : providerCountTotals,
       "availableTotal" : availableTotal,
       "icAdults" : (state[11]*.027*.779).toFixed(0),
       "pop" : state[11],
       "pop100Ks" : state[11] / 100000,
-      "show100kStats" : stateFilter !== null && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
+      "show100kStats" : stateFilter != "USA" && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
     }
   }
   return [header, totals, providerList];

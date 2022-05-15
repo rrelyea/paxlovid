@@ -220,7 +220,11 @@ function NavigationHeader() {
   }
 
   const handleDrugChange = (e) => {
-    document.location = 'https://rrelyea.github.io/'+ e.target.value + window.location.search;
+    if (e.target.value == "trials") {
+      document.location = "https://rrelyea.github.io/trials/?qs=Pfizer%20Vaccine:BNT162b2,Moderna%20Vaccine:mRNA-1273,Evusheld:AZD7442,Long-Covid,Paxlovid:nirmatrelvir%20ritonavir,Bebtelovimab,molnupiravir";
+    } else {
+      document.location = 'https://rrelyea.github.io/'+ e.target.value + window.location.search;
+    }
   }
 
   const handleStateChange = (e) => {
@@ -241,6 +245,7 @@ function NavigationHeader() {
             <option value='paxlovid'>Paxlovid</option>
             <option value='bebtelovimab'>Bebtelovimab</option>
             <option value='lagevrio'>Lagevrio</option>
+            <option value='trials'>Clinical Trials</option>
           </select> providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter != null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 

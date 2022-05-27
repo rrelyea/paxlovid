@@ -249,10 +249,12 @@ function NavigationHeader() {
             <option disabled="disabled">----</option>
             <option value='paxlovid'>Paxlovid</option>
             <option value='bebtelovimab'>Bebtelovimab</option>
-            <option value='lagevrio'>Lagevrio</option>
+            <option value='lagevrio'>Molnupiravir</option>
             <option disabled="disabled">----</option>
             <option value='trials'>Clinical Trials</option>
-          </select> providers in:
+          </select>
+          { constantsSite.siteLower === "lagevrio" ? " (molnupiravir) " : " "}
+           providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter != null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 
             index > 0 ? <option key={index} value={state[3].trim()}>{state[2].trim() + " (" + state[3].trim() + ")"}</option> : false
@@ -296,19 +298,6 @@ function NeighboringCounties() {
       <span id='neighboringCounties'></span>
     </div>
     </> : false ;
-}
-
-function Warning() {
-  const oldProvidersClick = () => {
-    var check = document.getElementById('showOldData');
-    dataDate = check.checked ? "03-15" : null;
-    renderPage();
-  }
-  return zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== "USA" || providerFilter !== null ?
-        <div className={ dataDate !== null ? "centeredOrange" : "centeredYellow" }>
-          <div className='tinyFont'>&nbsp;</div>
-          <div>WARNING: On March 16th, HHS.gov removed many providers &amp; all allotted counts. <label >Peek back at the 3/15 data: <input type='checkbox' id='showOldData' onClick={oldProvidersClick} defaultChecked={dataDate === "03-15"} /></label></div>
-        </div> : false;
 }
 
 function NationalDetails() {
@@ -600,7 +589,7 @@ function GetStateDetails(state, index, providers) {
       "pop100Ks" : state[11] / 100000,
       "show100kStats" : stateFilter !== "USA" && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
   }
-  if (header !== null || (totals != null && totals.providerCount != 0) || providerList.length != 0) {
+  if (header != null || (totals != null && totals.providerCount !== 0) || providerList.length !== 0) {
     return [header, totals, providerList];
   } else {
     return false;

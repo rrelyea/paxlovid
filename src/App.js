@@ -95,7 +95,7 @@ function renderPage() {
 
   stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : null;
   countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
-  if (stateFilter != "USA" && countyFilter !== null) {
+  if (stateFilter !== "USA" && countyFilter !== null) {
     adjacentCounties = null;
     Papa.parse(baseUri + "data/counties/adjacency/"+stateFilter+"/"+countyFilter.toLowerCase()+".csv", {
       download: true,
@@ -126,7 +126,7 @@ function renderPage() {
     });
   }
 
-  if (stateFilter != "USA" && countiesPerState === null) {
+  if (stateFilter !== "USA" && countiesPerState == null) {
     Papa.parse(baseUri + "data/counties/per-state/"+stateFilter+".csv", {
       download: true,
       complete: function(download) {
@@ -220,7 +220,9 @@ function NavigationHeader() {
   }
 
   const handleDrugChange = (e) => {
-    if (e.target.value == "trials") {
+    if (e.target.value === "covid-safe") {
+      document.location = "https://rrelyea.github.io/covid-safe";
+    } else if (e.target.value === "trials") {
       document.location = "https://rrelyea.github.io/trials/?qs=Pfizer%20Vaccine:BNT162b2,Moderna%20Vaccine:mRNA-1273,Evusheld:AZD7442,Long-Covid,Paxlovid:nirmatrelvir%20ritonavir,Bebtelovimab,molnupiravir";
     } else {
       document.location = 'https://rrelyea.github.io/'+ e.target.value + window.location.search;
@@ -235,16 +237,20 @@ function NavigationHeader() {
     navigateTo(stateFilter, e.target.value);
   }
 
-  var linkToState = stateFilter != "USA" ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
+  var linkToState = stateFilter !== "USA" ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
   return zipFilter === null || providerFilter === null ?
     <>
       <div className='centered'>
         <label className='chooseState' htmlFor='chooseState'>
           <select className='mediumFont' defaultValue={constantsSite.siteLower} onChange={(e) => handleDrugChange(e)}> 
+            <option value='covid-safe'>Covid-Safe</option>
+            <option disabled="disabled">----</option>
             <option value='evusheld'>Evusheld</option>
+            <option disabled="disabled">----</option>
             <option value='paxlovid'>Paxlovid</option>
             <option value='bebtelovimab'>Bebtelovimab</option>
             <option value='lagevrio'>Lagevrio</option>
+            <option disabled="disabled">----</option>
             <option value='trials'>Clinical Trials</option>
           </select> providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter != null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
@@ -275,7 +281,7 @@ function ProviderHeader() {
 }
 
 function HarvestInfo() {
-  return (stateFilter != "USA" || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
+  return (stateFilter !== "USA" || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null) ?
   <div className='smallerCentered'>
     [<a href={baseUri + "data/therapeutics/"+constantsSite.siteLower+"/"+constantsSite.siteLower+"-providers.csv"}>Data</a> harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}. Support: <a href='https://buymeacoffee.com/rrelyea'>coffee</a>, <a href='https://paypal.me/RobRelyea'>paypal</a>, <a href='https://venmo.com/code?user_id=2295481921175552954'>venmo</a>]
   </div>
@@ -283,7 +289,7 @@ function HarvestInfo() {
 }
 
 function NeighboringCounties() {
-  return stateFilter != "USA" && countyFilter !== null ? <>
+  return stateFilter !== "USA" && countyFilter !== null ? <>
     <div className='smallerCentered'>&nbsp;</div>
     <div>
       <span>- Neighboring: </span>
@@ -298,7 +304,7 @@ function Warning() {
     dataDate = check.checked ? "03-15" : null;
     renderPage();
   }
-  return zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter != "USA" || providerFilter !== null ?
+  return zipFilter !== null || cityFilter !== null || countyFilter !== null || stateFilter !== "USA" || providerFilter !== null ?
         <div className={ dataDate !== null ? "centeredOrange" : "centeredYellow" }>
           <div className='tinyFont'>&nbsp;</div>
           <div>WARNING: On March 16th, HHS.gov removed many providers &amp; all allotted counts. <label >Peek back at the 3/15 data: <input type='checkbox' id='showOldData' onClick={oldProvidersClick} defaultChecked={dataDate === "03-15"} /></label></div>
@@ -586,13 +592,13 @@ function GetStateDetails(state, index, providers) {
   : null;
 
   var totals = {
-      "totalType" : cityFilter !== null ? toTitleCase(cityFilter): (countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != "USA" ? state[3] + " State":""))),
+      "totalType" : cityFilter !== null ? toTitleCase(cityFilter): (countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter !== "USA" ? state[3] + " State":""))),
       "providerCount" : providerCountTotals,
       "availableTotal" : availableTotal,
       "icAdults" : (state[11]*.027*.779).toFixed(0),
       "pop" : state[11],
       "pop100Ks" : state[11] / 100000,
-      "show100kStats" : stateFilter != "USA" && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
+      "show100kStats" : stateFilter !== "USA" && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
   }
   if (header !== null || (totals != null && totals.providerCount != 0) || providerList.length != 0) {
     return [header, totals, providerList];
@@ -606,7 +612,7 @@ function MedicineNavigator() {
     <>
     <div className='smallerCentered'>&nbsp;</div>
     <div className='smallerCentered'>
-        <b>Preventive Medicine:</b> <a href='https://vaccines.gov'>vaccine/boost</a>, <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Prevention:</b> <a href='https://www.cdc.gov/coronavirus/2019-ncov/testing/self-testing.html'>rapid tests (CDC)</a>, ventilation (<a href='https://www.epa.gov/coronavirus/ventilation-and-coronavirus-covid-19'>EPA</a>, <a href='https://www.cdc.gov/coronavirus/2019-ncov/community/ventilation.html'>CDC</a>), <a href='https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/masks.html'>masking (CDC)</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a>, <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a>, <a href={'https://rrelyea.github.io/lagevrio'+window.location.search}>lagevrio</a>, <a href='https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'>HHS Locator</a>
+        <b>Covid-Safe:</b> <a href='https://rrelyea.github.io/covid-safe'>preventive medicines, protective measures, and "have covid?"</a>
     </div>
     </>
     : false;

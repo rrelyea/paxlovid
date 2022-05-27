@@ -253,7 +253,7 @@ function NavigationHeader() {
             <option disabled="disabled">----</option>
             <option value='trials'>Clinical Trials</option>
           </select>
-          { constantsSite.siteLower === "lagevrio" ? " (molnupiravir) " : " "}
+          { constantsSite.siteLower === "lagevrio" ? " (Lagevrio) " : " "}
            providers in:
         </label> <select className='mediumFont' id='chooseState' value={stateFilter != null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleStateChange(e)}>
           {states != null ? states.data.map((state,index) => 

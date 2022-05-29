@@ -241,6 +241,7 @@ function NavigationHeader() {
   return zipFilter === null || providerFilter === null ?
     <>
       <div className='centered'>
+        <a href='https://rrelyea.github.io/covid-safe'><h1 className="center">covid-safe</h1></a>
         <label className='chooseState' htmlFor='chooseState'>
           <select className='mediumFont' defaultValue={constantsSite.siteLower} onChange={(e) => handleDrugChange(e)}> 
             <option value='covid-safe'>Covid-Safe</option>
@@ -601,7 +602,7 @@ function MedicineNavigator() {
     <>
     <div className='smallerCentered'>&nbsp;</div>
     <div className='smallerCentered'>
-        <b>Covid-Safe:</b> <a href='https://rrelyea.github.io/covid-safe'>preventive medicines, protective measures, and "have covid?"</a>
+        <b>Stay Covid-Safe:</b> <a href='https://rrelyea.github.io/covid-safe'>info about preventive medicines, protective measures, and treatments</a>
     </div>
     </>
     : false;

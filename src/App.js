@@ -271,6 +271,7 @@ function NavigationHeader() {
       <div onClick={mapClick} className='mapDiv'>
         <MapChart id='mapChart' />
       </div>
+      { constantsSite.siteLower === "evusheld" ? <div className='centered'>Use: <a href='/evusheld/guide/'>Evusheld Guide</a> for tips and info to get Evusheld<br/></div> : false }
     </>
   : false;
 }
@@ -391,6 +392,12 @@ function GetNationalDetails(states, providers) {
 }
 
 
+const supportAd = <tr>
+  <td className='tdAd' colSpan='2'><b>SUPPORT</b>: Please enable <a href='https://www.geekwire.com/2022/after-wife-got-cancer-microsoft-engineer-built-a-tool-to-locate-anti-covid-drug-for-immunocompromised/'>me</a> to provide this helpful info to you (ad free) by giving a small donation:</td>
+  <td className='tdAd'>
+  <b>Sponsor via</b> <a href='https://buymeacoffee.com/rrelyea'>buymeacoffee.com</a>, <a href='https://paypal.me/RobRelyea'>paypal</a>, or <a href='https://venmo.com/code?user_id=2295481921175552954'>venmo</a>
+  </td>
+  </tr>;
 
 const updateTextArea = () =>  {
   var mailtoLink = document.getElementById("mailtoLink");
@@ -482,7 +489,11 @@ function GetStateDetails(state, index, providers) {
           </div> : false }
         </>
       }
-      return <><tr key={index} className={lastCityStyle}>
+      
+      var placeSupportAd = Math.floor(Math.random() * 33) === 0;
+
+      return <>
+        <tr key={index} className={lastCityStyle}>
         <td>
           {cityMarkup}
         </td>
@@ -561,6 +572,7 @@ function GetStateDetails(state, index, providers) {
         </tr>
         :false
       }
+      {placeSupportAd ? supportAd : false}
       </>
     }
   });
@@ -590,7 +602,9 @@ function GetStateDetails(state, index, providers) {
       "pop100Ks" : state[11] / 100000,
       "show100kStats" : stateFilter !== "USA" && countyFilter === null && cityFilter === null && zipFilter === null && providerFilter === null
   }
+
   if (header != null || (totals != null && totals.providerCount !== 0) || providerList.length !== 0) {
+      providerList.push(supportAd); // place support ad to tail end of providers
     return [header, totals, providerList];
   } else {
     return false;

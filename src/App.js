@@ -445,7 +445,6 @@ function GetStateDetails(state, index, providers) {
     var city = provider[3];
 
     var provider_x = toTitleCase(provider[0].replaceAll('-',' '));
-    console.log(provider_x, providerFilter);
     if (providerFilter === null || provider_x.includes(providerFilter)) {
       // use encodeURIComponent for "#"
       var linkToProvider = "?provider=" + encodeURIComponent(provider_x.replaceAll(' ', '-')) + "&zip=" + provider[6].substring(0,5);

@@ -162,7 +162,7 @@ class DoseViewer extends React.Component {
             var popDataDate = this.GetDate(this.state.doseInfo[i][7], 0, 10);
             var available = this.GetDoses(this.state.doseInfo[i][6]);
 
-            if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null) {
+            if (provider != null && provider.replaceAll('-',' ').toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null) {
               if (reportDate !== lastReportDate || available !== lastAvailable) {
                 var dayDiff = this.getDays(new Date(lastReportDate), new Date(reportDate));
                 dosesAdministered = lastAvailable - available;

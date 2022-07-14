@@ -166,13 +166,13 @@ function renderPage() {
   pageLocation = window.location.hash;
 
   if (zipFilter !== null && providerFilter !== null) {
-    document.title = constantsSite.site + " '" + toTitleCase(providerFilter) + "'";
+    document.title = "^" + constantsSite.site + " '" + toTitleCase(providerFilter) + "'";
   } else {
-    if (stateFilter !== "USA" && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
-    else if (stateFilter !== "USA" && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
-    else if (stateFilter !== "USA") document.title = stateFilter + " " + constantsSite.site + " Providers in " + stateFilter;
-    else if (providerFilter !== null) document.title = constantsSite.site + " '" + toTitleCase(providerFilter) + "'"
-    else document.title = constantsSite.site + " Providers in USA";
+    if (stateFilter !== "USA" && countyFilter !== null) document.title = "^" + stateFilter + "/" + toTitleCase(countyFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(countyFilter) + " County, " + stateFilter
+    else if (stateFilter !== "USA" && cityFilter !== null) document.title = "^" + stateFilter + "/" + toTitleCase(cityFilter) + " " + constantsSite.site + " Providers in " + toTitleCase(cityFilter) + ", " + stateFilter;
+    else if (stateFilter !== "USA") document.title = "^" + stateFilter + " " + constantsSite.site + " Providers in " + stateFilter;
+    else if (providerFilter !== null) document.title = "^" + constantsSite.site + " '" + toTitleCase(providerFilter) + "'"
+    else document.title = "^" + constantsSite.site + " Providers in USA";
   }
   var page = 
     <div >

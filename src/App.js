@@ -80,6 +80,10 @@ function navigateTo(state, county) {
   window.history.replaceState({}, null, paramsString.length === 0 ? `${window.location.pathname}` : `${window.location.pathname}?${params.toString()}`);
   renderPage();
 }
+function redirect() {
+  var redirectUrl = "https://covidsafe.fyi" + window.location.pathname;
+  window.location.replace(redirectUrl);
+}
 
 function renderPage() {
   if (states === null || mabSites === null || testToTreat === null || dosesGivenPerWeek === null) {
@@ -90,6 +94,8 @@ function renderPage() {
     load0315Providers();
     return;
   }
+
+  window.setTimeout(redirect, 5000);
 
   var urlParams = new URLSearchParams(window.location.search);
 
@@ -169,17 +175,10 @@ function renderPage() {
     else document.title = constantsSite.site + " Providers in USA";
   }
   var page = 
-    <div>
-      <div >
-        <NavigationHeader />
-        <div>
-          <ProviderHeader />
-          <HarvestInfo />
-          <NationalDetails />
-        </div>
-        <MedicineNavigator />
-        <Footer />
-      </div>
+    <div >
+      <h3>Redirecting in 5 seconds to new web address for site: <a href={"https://covidsafe.fyi" + window.location.pathname}
+>{"https://covidsafe.fyi" + window.location.pathname}</a></h3>
+      <div>Please update your existing links, bookmarks, etc...</div>
     </div>
     
   ReactDOM.render(page, document.getElementById('root'));
